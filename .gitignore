@@ -1,0 +1,7 @@
+data/cache/*.*
+data/cache/twig/*.*
+data/db/*.db
+*.komodoproject
+data/config.php
+data/config.cmd
+data/config.json

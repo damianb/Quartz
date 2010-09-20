@@ -1,0 +1,34 @@
+<Files .htaccess>
+	Order Allow,Deny
+	Deny from all
+</files>
+
+<Files doctrine>
+	Order Allow,Deny
+	Deny from all
+</files>
+
+<Files doctrine.php>
+	Order Allow,Deny
+	Deny from all
+</files>
+
+# The only rewrite block we will ever need
+RewriteEngine On
+
+#change later
+#RewriteCond %{HTTP_HOST} ^www.codebite.net
+#RewriteRule (.*) http://codebite.net/$1 [R=301,L]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . index.php [L]
+
+# Error docs...
+ErrorDocument 400 /error/?e=400
+ErrorDocument 401 /error/?e=401
+ErrorDocument 403 /error/?e=403
+ErrorDocument 404 /error/?e=404
+ErrorDocument 500 /error/?e=500
+ErrorDocument 502 /error/?e=502
+ErrorDocument 503 /error/?e=503

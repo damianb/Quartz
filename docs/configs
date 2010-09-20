@@ -1,0 +1,56 @@
+admin
+- admin.name
+--- root administrator's username on install
+--- default: string 'admin'
+- admin.pass
+--- root administrator's password on install
+--- default: string 'password'
+
+doctrine
+- doctrine.dsn
+--- doctrine dsn information
+--- default: string 'sqlite:data/db/develop.db'
+
+framework
+- framework.cache_engine
+--- the cache engine to use
+--- default: string 'JSON'
+- framework.url_base
+--- the base url to use with the url handler
+--- default: string '/'
+
+site
+- site.disable_site
+--- disable the site entirely?
+--- default: boolean false
+- site.disable_message
+--- the message to display if the site is disabled
+--- default: string 'FreeQ is currently disabled.'
+- site.konami_redirect
+--- sets up a redirect when konami code is successfully entered
+--- default: boolean false
+- site.blocked_pages
+--- list of pages to deny access to
+--- default: array array('403')
+- site.quotes_per_page
+--- how many quotes will be displayed
+--- default: integer 50
+- site.remote_url
+--- the URL to use as a base for FreeQ's installation; this must be set for quote embedding to work
+--- default: string ''
+- site.timezone
+--- the default site timezone, for guests and newly registered users that haven't set their timezone manually
+--- default: string '+0000'
+
+template
+- template.variables
+--- array of all the various template variables we want to pass on to twig
+--- default: array array()
+
+twig
+- twig.debug
+--- enable twig debug mode
+--- default: boolean false
+- twig.template_dir
+--- the template subdir dir to pull twig templates from
+--- default: string 'default'
