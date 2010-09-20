@@ -1,0 +1,9 @@
+[submodule "vendor/Twig"]
+	path = vendor/Twig
+	url = http://github.com/fabpot/Twig.git
+[submodule "vendor/doctrine"]
+	path = vendor/doctrine
+	url = http://github.com/doctrine/doctrine1.git
+[submodule "vendor/OpenFlame-Framework"]
+	path = vendor/OpenFlame-Framework
+	url = http://github.com/OpenFlame/OpenFlame-Framework.git
