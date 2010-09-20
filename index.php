@@ -54,7 +54,7 @@ try
 		throw new ServerErrorException('Access to this page is forbidden.  Keep trying to sneak a peek and you will earn yourself a hadouken to the face.', 403);
 
 	// grab the base page class
-	require QUARTZ . 'includes/PageBase/base.php';
+	require QUARTZ . 'includes/PageBase.php';
 	if(!class_exists('QuartzPageBase', false))
 		throw new SiteException('Page base class not found', SiteException::ERR_CORE_PAGEBASE_NOT_FOUND);
 	if(!file_exists(QUARTZ . 'data/pages/' . $mode . '.php'))
