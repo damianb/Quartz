@@ -36,11 +36,10 @@ $template->assignVars(array(
 
 /* edit here to assign template variables for session integration */
 
-// @todo session integration here:
 /*
 $navigation = $template->fetchVar('navigation_left');
 $template->assignVar('navigation_left', array_merge((($navigation) ? $navigation : array()), array(
-	array('url' => $url_>build(array('login')), 'text' => 'Login'),
+	array('url' => $url->build(array('login')), 'text' => 'Login'),
 	array('url' => $url->build(array('register')), 'text' => 'Register'),
 )));
 */
