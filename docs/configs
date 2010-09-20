@@ -1,11 +1,3 @@
-admin
-- admin.name
---- root administrator's username on install
---- default: string 'admin'
-- admin.pass
---- root administrator's password on install
---- default: string 'password'
-
 doctrine
 - doctrine.dsn
 --- doctrine dsn information
@@ -25,19 +17,10 @@ site
 --- default: boolean false
 - site.disable_message
 --- the message to display if the site is disabled
---- default: string 'FreeQ is currently disabled.'
-- site.konami_redirect
---- sets up a redirect when konami code is successfully entered
---- default: boolean false
+--- default: string 'Quartz is currently disabled.'
 - site.blocked_pages
 --- list of pages to deny access to
 --- default: array array('403')
-- site.quotes_per_page
---- how many quotes will be displayed
---- default: integer 50
-- site.remote_url
---- the URL to use as a base for FreeQ's installation; this must be set for quote embedding to work
---- default: string ''
 - site.timezone
 --- the default site timezone, for guests and newly registered users that haven't set their timezone manually
 --- default: string '+0000'
