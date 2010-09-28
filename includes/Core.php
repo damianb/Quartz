@@ -48,20 +48,33 @@ class Quartz
 		// if the config file does not exist, expect an exception to come from this!
 		self::$config = OfJSON::decode(QUARTZ . 'data/config.json');
 	}
-	
+
+	/**
+	 * Obtains or stores an object for global use.
+	 * @param string $object_name - The object slot to retrieve from, or store in.
+	 * @param object $object - The object to store, if we want to store anything.  Otherwise, leave empty.
+	 * @return object - The object in the object slot we specified.
+	 */
 	public static function obj($object_name, $object = NULL)
 	{
 		if(!is_null($object))
 			self::$objects[$object_name] = $object;
 		return self::$objects[$object_name];
 	}
-	
-	public function config($config_name, $default = false)
+
+	/**
+	 * Fetches a global configuation.
+	 * @param string $config_name - The config to grab.
+	 * @param mixed $default - The default value to use (and to typecast as) for this config.
+	 * @return mixed - The config we wanted.
+	 */
+	public function config($config_name, $default = NULL)
 	{
 		if(isset(self::$config[$config_name]))
 		{
 			$config = self::$config[$config_name];
-			settype($config, gettype($default));
+			if(!is_null($default))
+				settype($config, gettype($default));
 			return $config;
 		}
 		return $default;
