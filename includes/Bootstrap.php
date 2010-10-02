@@ -77,7 +77,7 @@ Quartz::obj('doctrine_manager', $manager);
 Quartz::obj('doctrine_conn', $conn);
 
 // twig setup
-require QUARTZ . '/vendor/twig/lib/Twig/Autoloader.php';
+require QUARTZ . 'vendor/twig/lib/Twig/Autoloader.php';
 Twig_Autoloader::register();
 
 // We want to be able to fall back on the default twig template dir
