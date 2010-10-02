@@ -73,8 +73,8 @@ $conn->setCharset('utf8');
 $conn->setCollate('utf8_bin');
 
 // Some more references, for later use
-$objects('doctrine_manager', $manager);
-$objects('doctrine_conn', $conn);
+Quartz::obj('doctrine_manager', $manager);
+Quartz::obj('doctrine_conn', $conn);
 
 // twig setup
 require QUARTZ . '/vendor/twig/lib/Twig/Autoloader.php';
@@ -82,7 +82,7 @@ Twig_Autoloader::register();
 
 // We want to be able to fall back on the default twig template dir
 $twig_dirs = array();
-if(!Quartz::config('twig.template_dir', ''))
+if(Quartz::config('twig.template_dir', ''))
 	$twig_dirs[] = QUARTZ . 'data/template/' . Quartz::config('twig.template_dir', '');
 
 $twig_loader = new Twig_Loader_Filesystem(array_merge($twig_dirs, array(QUARTZ . 'data/template/quartz')));
