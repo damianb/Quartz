@@ -43,7 +43,7 @@ class Quartz
 	 * Initiator method, loads the config file
 	 * @return void
 	 */
-	public static function init(&$config, &$objects)
+	public static function init()
 	{
 		// if the config file does not exist, expect an exception to come from this!
 		self::$config = OfJSON::decode(QUARTZ . 'data/config.json');
@@ -68,7 +68,7 @@ class Quartz
 	 * @param mixed $default - The default value to use (and to typecast as) for this config.
 	 * @return mixed - The config we wanted.
 	 */
-	public function config($config_name, $default = NULL)
+	public static function config($config_name, $default = NULL)
 	{
 		if(isset(self::$config[$config_name]))
 		{

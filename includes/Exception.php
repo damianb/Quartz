@@ -15,7 +15,7 @@
  *
  */
 
-if(!defined('FREEQ')) exit;
+if(!defined('QUARTZ')) exit;
 
 /**
  * Quartz - Primary Exception class,
