@@ -46,16 +46,18 @@ $conn->setCharset('utf8');
 $conn->setCollate('utf8_bin');
 
 $cli = new Doctrine_Cli(array(
-    'models_path' => QUARTZ . 'data/db/models',
-    'migrations_path' => QUARTZ . 'data/db/migrations',
-    'yaml_schema_path' => QUARTZ . 'data/db/schema',
-	'data_fixtures_path' => QUARTZ . 'data/db/fixtures',
-    'generate_models_options' => array(
-        'pearStyle' => true,
-        'generateTableClasses' => true,
-        'baseClassPrefix' => 'Base',
-        'baseClassesDirectory' => null,
-    ),
+	'models_path'			=> QUARTZ . 'data/db/models',
+	'migrations_path'		=> QUARTZ . 'data/db/migrations',
+	'yaml_schema_path'		=> QUARTZ . 'data/db/schema',
+	'data_fixtures_path'	=> QUARTZ . 'data/db/fixtures',
+	'generate_models_options' => array(
+		'pearStyle'				=> true,
+		'generateTableClasses'	=> true,
+		'baseClassesDirectory'	=> null,
+		'baseClassPrefix'		=> 'Base',
+		'classPrefix'			=> 'QuartzModel',
+		'classPrefixFiles'		=> true,
+	),
 ));
 
 $cli->run($_SERVER['argv']);
