@@ -19,6 +19,7 @@ if(defined('QUARTZ_DEBUG'))
 {
 	@error_reporting(-1);
 	@ini_set('display_errors', 1);
+	define('OF_DEBUG', true);
 }
 
 // Set the time to UTC.
