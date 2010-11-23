@@ -42,7 +42,7 @@ set_exception_handler('QuartzHandler::catcher');
 Quartz::init();
 
 // if the site is disabled, disable it!
-if($config('site.disable_site', false))
+if(Quartz::config('site.disable_site', false))
 {
 	header('HTTP/1.0 503 Service Unavailable');
 	QuartzHandler::asplode('The site is currently unavailable', Quartz::config('site.disable_message', 'The site is currently disabled.'));
