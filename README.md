@@ -1,12 +1,13 @@
 # Quartz
 
-Quartz is a site base to code on top of, providing a sound platform for error handling, configuration, templating, and page handling.
+Quartz is a usability layer on top of the PHP 5.3 version of the OpenFlame Framework, taking care of common tasks that are left to the application to handle.
 
-**Copyright**: *(c) 2010 Damian Bushong*
+**Copyright**: *(c) 2009 - 2011 Damian Bushong*
 
 **License**: *MIT License*
 
 ## Quartz Requirements
 
 * PHP 5.3
-* Support for Doctrine 1.2 ORM
+* PDO
+* PDO_SQlite
