@@ -47,11 +47,13 @@ class Processor
 		$router = Core::getObject('router');
 
 		// Set the default "home" route.
-		$home = $router->newRoute('/home/', '\\Codebite\\Quartz\\Page\\Instance\\Default::newInstance');
+		$home_callback = Core::getConfig('page.home_callback') ?: '\\Codebite\\Quartz\\Page\\Instance\\Home::newInstance';
+		$home = $router->newRoute('/home/', $home_callback);
 		$router->storeRoute($home)
 			->setHomeRoute($home);
 
-		$error = $router->newRoute('/error/', '\\Codebite\\Quartz\\Page\\Instance\\Error::newInstance');
+		$error_callback = Core::getConfig('page.error_callback') ?: '\\Codebite\\Quartz\\Page\\Instance\\Error::newInstance';
+		$error = $router->newRoute('/error/', $error_callback);
 		$router->storeRoute($error)
 			->setErrorRoute($error);
 
@@ -104,38 +106,8 @@ class Processor
 		}
 		catch(\Codebite\Quartz\Exception\ServerErrorException $e)
 		{
-			// the compendium of all the types of server errors.  Oh the joy!
-			$server_errors = array(
-				200 => 'OK',
-				201 => 'Created',
-				202 => 'Accepted',
-				204 => 'No Content',
-				205 => 'Reset Content',
-				300 => 'Multiple Choices',
-				301 => 'Moved Permanently',
-				302 => 'Found', // Moved Temporarily
-				303 => 'See Other',
-				304 => 'Not Modified',
-				307 => 'Temporary Redirect',
-				400 => 'Bad Request',
-				401 => 'Unauthorized',
-				403 => 'Forbidden',
-				404 => 'Not Found',
-				406 => 'Not Acceptable',
-				409 => 'Conflict',
-				410 => 'Gone',
-				500 => 'Internal Server Error',
-				501 => 'Not Implemented',
-				502 => 'Bad Gateway',
-				503 => 'Service Unavailable',
-			);
-
-			// dem errors
-			$error = isset($server_errors[(int) $e->getCode()]) ? (int) $e->getCode() : 500;
-
 			$router->getErrorRoute()
-				->setRequestDataPoint('header', "HTTP/1.0 {$error} {$server_errors[$error]}")
-				->setRequestDataPoint('code', $error)
+				->setRequestDataPoint('code', ($e->getCode() ?: 500))
 				->setRequestDataPoint('message', $e->getMessage())
 				->fireCallback();
 		}
