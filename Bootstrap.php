@@ -37,8 +37,7 @@ $cache_engine->setCachePath(\Codebite\Quartz\SITE_ROOT . '/cache/');
 $cache = Core::setObject('cache', new \OpenFlame\Framework\Cache\Driver($cache_engine));
 
 // Handle twig variables and page assets.
-//$template = Core::setObject('template', new \OpenFlame\Framework\Template\Variables());
-$template = new \OpenFlame\Framework\Template\Variables();
+$template = Core::setObject('template', new \OpenFlame\Framework\Template\Variables());
 $asset_manager = new \OpenFlame\Framework\Template\Asset\Manager();
 
 // Load Twig.
@@ -57,14 +56,14 @@ foreach($config_data as $config_name => $config_value)
 }
 
 // Load the language file if we want to.
-$language = new \OpenFlame\Framework\Language\Handler();
+$language_handler = Core::setObject('language', new \OpenFlame\Framework\Language\Handler());
 /* @todo rework this for more flexibility
  $language_entries = \Symfony\Component\Yaml\Yaml::load(\Codebite\Quartz\SITE_ROOT . '/data/language/en.yml');
- $language->loadEntries($language_entries);
+ $language_handler->loadEntries($language_entries);
 */
 
 // Set the base URL for HTTP stuff.
-$base_url = Core::getObject('page.base_url') ?: '/';
+$base_url = Core::getConfig('page.base_url') ?: '/';
 $router->setBaseURL($base_url);
 $asset_manager->setBaseURL($base_url);
 
@@ -75,7 +74,7 @@ $css = $asset_manager->registerCSSAsset('common');
 $css->setURL('/style/css/common.css');
 
 // Load our defined routes and the page processor.
-$page = new \Codebite\Quartz\Page\Processor();
+$page = Core::setObject('processor', new \Codebite\Quartz\Page\Processor());
 $page->loadRoutes();
 
 // Create the template proxies and load them into the template variable manager
