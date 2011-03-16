@@ -54,6 +54,31 @@ class Processor
 		$error = $router->newRoute('/error/', '\\Codebite\\Quartz\\Page\\Instance\\Error::newInstance');
 		$router->storeRoute($error)
 			->setErrorRoute($error);
+
+		return $this;
+	}
+
+	public function loadRoutes()
+	{
+		$cache = Core::getObject('cache');
+		$router = Core::getObject('router');
+
+		if($cache->dataCached('page_routes'))
+		{
+			$route_data = $cache->loadData('page_routes');
+			$router->loadFromFullRouteCache($route_data);
+		}
+		else
+		{
+			// Grab the page routes from the config
+			$routes = Core::getConfig('page.routes');
+			$this->registerDefaultRoutes();
+			$router->newRoutes($routes);
+
+			$cache->storeData('page_routes', $router->getFullRouteCache());
+		}
+
+		return $this;
 	}
 
 	public function executePage()
