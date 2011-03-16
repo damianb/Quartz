@@ -41,12 +41,13 @@ $template = Core::setObject('template', new \OpenFlame\Framework\Template\Variab
 $asset_manager = new \OpenFlame\Framework\Template\Asset\Manager();
 
 // Load Twig.
-$twig = new \OpenFlame\Framework\Template\Twig();
+$twig = Core::setObject('twig.frontend', new \OpenFlame\Framework\Template\Twig());
 $twig->setTwigRootPath(\OpenFlame\ROOT_PATH . '/Twig/lib/Twig/')
 	->setTwigCachePath(\Codebite\Quartz\SITE_ROOT . '/cache/twig/')
 	->setTwigOption('autoescape', false)
 	->setTwigOption('debug', true)
 	->setTemplatePath(\Codebite\Quartz\SITE_ROOT . '/data/template/');
+$twig->initTwig();
 
 // Load the config file and its data.
 $config_data = \Symfony\Component\Yaml\Yaml::load(\Codebite\Quartz\SITE_ROOT . '/data/config/config.yml');
@@ -77,11 +78,10 @@ $css->setURL('/style/css/common.css');
 $page = Core::setObject('processor', new \Codebite\Quartz\Page\Processor());
 $page->loadRoutes();
 
-// Create the template proxies and load them into the template variable manager
-$template->assignVars(array(
-	'asset'		=> new \OpenFlame\Framework\Template\Asset\Proxy($asset_manager),
-	'language'	=> new \OpenFlame\Framework\Language\Proxy($language_handler),
-));
+// Create the template proxies and load them into twig
+$twig_env = Core::getObject('twig.environment');
+$twig_env->addGlobal('asset', new \OpenFlame\Framework\Template\Asset\Proxy($asset_manager));
+$twig_env->addGlobal('language', new \OpenFlame\Framework\Language\Proxy($language_handler));
 
 /* index.php should contain something like this:
 
