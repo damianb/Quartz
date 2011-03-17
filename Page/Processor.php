@@ -47,12 +47,12 @@ class Processor
 		$router = Core::getObject('router');
 
 		// Set the default "home" route.
-		$home_callback = Core::getConfig('page.home_callback') ?: '\\Codebite\\Quartz\\Page\\Instance\\Home::newInstance';
+		$home_callback = Core::getConfig('page.home_callback') ?: '\\Codebite\\Quartz\\Page\\Instance\\Home::newRoutedInstance';
 		$home = $router->newRoute('/home/', $home_callback);
 		$router->storeRoute($home)
 			->setHomeRoute($home);
 
-		$error_callback = Core::getConfig('page.error_callback') ?: '\\Codebite\\Quartz\\Page\\Instance\\Error::newInstance';
+		$error_callback = Core::getConfig('page.error_callback') ?: '\\Codebite\\Quartz\\Page\\Instance\\Error::newRoutedInstance';
 		$error = $router->newRoute('/error/', $error_callback);
 		$router->storeRoute($error)
 			->setErrorRoute($error);
