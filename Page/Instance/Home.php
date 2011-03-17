@@ -33,4 +33,9 @@ use \OpenFlame\Framework\Core;
 class Home extends \Codebite\Quartz\Page\Instance\Base
 {
 	protected $template_name = 'home.twig.html';
+
+	public function executePage()
+	{
+		return;
+	}
 }
