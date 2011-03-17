@@ -32,8 +32,8 @@ $router = Core::setObject('router', new \OpenFlame\Framework\URL\Router());
 $input = Core::setObject('input', new \OpenFlame\Framework\Input\Handler());
 
 // Start up the cache subsystem.
-$cache_engine = new \OpenFlame\Framework\Cache\Engine\EngineJSON();
-$cache_engine->setCachePath(\Codebite\Quartz\SITE_ROOT . '/cache/');
+$cache_engine = new \OpenFlame\Framework\Cache\Engine\EngineJSON(array('cache_path' => \Codebite\Quartz\SITE_ROOT . '/cache/'));
+//$cache_engine->setCachePath(\Codebite\Quartz\SITE_ROOT . '/cache/');
 $cache = Core::setObject('cache', new \OpenFlame\Framework\Cache\Driver($cache_engine));
 
 // Handle twig variables and page assets.
