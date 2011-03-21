@@ -47,8 +47,8 @@ $twig->setTwigRootPath(\OpenFlame\ROOT_PATH . '/Twig/lib/Twig/')
 	->setTwigCachePath(\Codebite\Quartz\SITE_ROOT . '/cache/twig/')
 	->setTwigOption('autoescape', false)
 	->setTwigOption('debug', true)
-	->setTemplatePath(\Codebite\Quartz\SITE_ROOT . '/data/template/');
-$twig->initTwig();
+	->setTemplatePath(\Codebite\Quartz\SITE_ROOT . '/data/template/')
+	->initTwig();
 
 // Load the config file and its data.
 $config_data = \Symfony\Component\Yaml\Yaml::load(\Codebite\Quartz\SITE_ROOT . '/data/config/config.yml');
@@ -70,10 +70,8 @@ $router->setBaseURL($base_url);
 $asset_manager->setBaseURL($base_url);
 
 // Define a few assets...
-$jquery = $asset_manager->registerJSAsset('jquery');
-$jquery->setURL('/style/js/jquery.min.js');
-$css = $asset_manager->registerCSSAsset('common');
-$css->setURL('/style/css/common.css');
+$asset_manager->registerJSAsset('jquery')->setURL('/style/js/jquery.min.js');
+$asset_manager->registerCSSAsset('common')->setURL('/style/css/common.css');
 
 // Load our defined routes and the page processor.
 $page = Core::setObject('processor', new \Codebite\Quartz\Page\Processor());
@@ -83,6 +81,8 @@ $page->loadRoutes();
 $twig_env = Core::getObject('twig.environment');
 $twig_env->addGlobal('asset', new \OpenFlame\Framework\Template\Asset\Proxy($asset_manager));
 $twig_env->addGlobal('language', new \OpenFlame\Framework\Language\Proxy($language_handler));
+
+$asset_manager->enableInvalidAssetExceptions();
 
 /* index.php should contain something like this:
 
