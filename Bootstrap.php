@@ -26,6 +26,9 @@ use \OpenFlame\Framework\Core;
  */
 if(!defined('Codebite\\Quartz\\SITE_ROOT')) exit;
 
+// Set our exception handler
+set_exception_handler('\\Codebite\\Quartz\\Exception\\Handler::catcher');
+
 // Init the URL router
 $router = Core::setObject('router', new \OpenFlame\Framework\URL\Router());
 // Init the input handler
@@ -92,9 +95,20 @@ $template = Core::getObject('template');
 
 $page->executePage();
 $page_instance = Core::getObject('page.instance');
-
 $twig_env = Core::getObject('twig.environment');
-$twig_env->loadTemplate($page_instance->getTemplateName());
-$twig_env->display($template->fetchAllVars());
+$twig_page = $twig_env->loadTemplate($page_instance->getTemplateName());
+
+try
+{
+	ob_start();
+	$twig_env->display($template->fetchAllVars());
+	ob_end_flush();
+}
+catch(Exception $e)
+{
+	ob_clean();
+	throw $e;
+}
+
 
 */
