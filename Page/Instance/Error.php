@@ -39,17 +39,11 @@ class Error extends \Codebite\Quartz\Page\Instance\Base
 		$template = Core::getObject('template');
 		$input = Core::getObject('input');
 
-		if($this->route)
-		{
-			$error = $this->route->getRequestDataPoint('code');
-		}
-		else
-		{
-			$error = $input->newInput('REQUEST::E')
-				->setDefault(500)
-				->disableFieldJuggling()
-				->getClean();
-		}
+		$error_default = (!empty($this->route) && $this->route->getRequestDataPoint('code')) ? $this->route->getRequestDataPoint('code') : 500;
+		$error = $input->getInput('REQUEST::e')
+			->setDefault($error_default)
+			->disableFieldJuggling()
+			->getClean();
 
 		// the compendium of all the recognized types of server errors.  Oh the joy!
 		$server_errors = array(
@@ -78,7 +72,7 @@ class Error extends \Codebite\Quartz\Page\Instance\Base
 		);
 
 		// dem errors
-		$error = isset($server_errors[(int) $error]) ? (int) $error : 500;
+		$error = isset($server_errors[(int) $error]) ? (int) $error : 404;
 		$error_message = $server_errors[(int) $error];
 		header("HTTP/1.0 {$error} {$error_message}");
 
