@@ -30,7 +30,7 @@ namespace Codebite\Quartz\Exception;
  */
 class Handler extends \OpenFlame\Framework\Exception\Handler
 {
-	protected static $page_format = '
+	public static $page_format = '
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" dir="ltr">
 	<head>
