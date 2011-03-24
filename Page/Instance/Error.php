@@ -82,9 +82,7 @@ class Error extends \Codebite\Quartz\Page\Instance\Base
 		$error_message = $server_errors[(int) $error];
 		header("HTTP/1.0 {$error} {$error_message}");
 
-		$template->assignVars(array(
-			'error_code'		=> $error,
-			'error_message'		=> $error_message,
-		));
+		\Codebite\Quartz\Exception\Handler::asplode('Server error', sprintf('An error was encountered while processing your request.<br /><br /><strong>Error:</strong> %1$d %2$s', $error, $error_message));
+		exit;
 	}
 }
