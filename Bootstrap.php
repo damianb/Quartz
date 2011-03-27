@@ -26,7 +26,7 @@ use \OpenFlame\Framework\Core;
  */
 if(!defined('Codebite\\Quartz\\SITE_ROOT')) exit;
 
-// Set our exception handler
+// Set our exception handler temporarily...
 set_exception_handler('\\Codebite\\Quartz\\Exception\\Handler::catcher');
 
 // Init the URL router
@@ -58,6 +58,12 @@ $config_data = \Symfony\Component\Yaml\Yaml::load(\Codebite\Quartz\SITE_ROOT . '
 foreach($config_data as $config_name => $config_value)
 {
 	Core::setConfig($config_name, $config_value);
+}
+
+// Override the exception handler
+if(Core::getConfig('exception.handler') !== NULL)
+{
+	set_exception_handler(Core::getConfig('exception.handler'));
 }
 
 // Load the language file if we want to.
