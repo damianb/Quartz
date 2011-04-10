@@ -69,7 +69,7 @@ $dispatcher->register('twig.load', function(\OpenFlame\Framework\Event\Instance 
 		->setTwigCachePath(\Codebite\Quartz\SITE_ROOT . '/cache/twig/')
 		->setTwigOption('autoescape', false)
 		->setTwigOption('debug', true)
-		->setTemplatePath(\Codebite\Quartz\SITE_ROOT . '/data/template/')
+		->setTemplatePath(\Codebite\Quartz\SITE_ROOT . '/data/template/');
 }, array(), 0);
 
 // Load twig
