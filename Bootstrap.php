@@ -77,40 +77,18 @@ $dispatcher->register('twig.load', function(\OpenFlame\Framework\Event\Instance 
 	$twig->initTwig();
 }, array(), 10);
 
-// Create the template proxies and load them into twig
-$dispatcher->register('twig.load', function(\OpenFlame\Framework\Event\Instance $event) use($asset_manager, $language_handler) {
-	$twig_env = Core::getObject('twig.environment');
-	$twig_env->addGlobal('asset', new \OpenFlame\Framework\Template\Asset\Proxy($asset_manager));
-	$twig_env->addGlobal('language', new \OpenFlame\Framework\Language\Proxy($language_handler));
-}, array(), 15);
-
-// Load up Doctrine2 DBAL, and set it up
-$dispatcher->register('dbal.load', function(\OpenFlame\Framework\Event\Instance $event) {
-	$required_dbal_configs = array('db.name', 'db.user', 'db.password');
-	foreach($required_dbal_configs as $c)
-	{
-		if(Core::getConfig($c) === NULL)
-		{
-			throw new \RuntimeException('Required database connection configuration setting not set');
-		}
-	}
-	$autoloader = Core::getObject('autoloader');
-	$autoloader->setPath(\OpenFlame\ROOT_PATH . '/vendor/Doctrine/DBAL/lib/');
-	$dbal_config = Core::setObject('doctrine.dbal.config', new \Doctrine\DBAL\Configuration());
-	$dbal_connection = Core::setObject('doctrine.dbal.connection', Doctrine\DBAL\DriverManager::getConnection(array(
-		'host'		=> Core::getConfig('db.host') ?: 'localhost',
-		'dbname'	=> Core::getConfig('db.name'),
-		'user'		=> Core::getConfig('db.user'),
-		'password'	=> Core::getConfig('db.password'),
-		'driver'	=> 'pdo_mysql',
-	)));
-}, array(), 0);
-
 // Define our assets...
 $dispatcher->register('page.assets.define', function(\OpenFlame\Framework\Event\Instance $event) use($asset_manager) {
 	$asset_manager->registerJSAsset('jquery')->setURL('/style/js/jquery.min.js');
 	$asset_manager->registerCSSAsset('common')->setURL('/style/css/common.css');
 }, array(), 0);
+
+// Create the template proxies and load them into twig
+$dispatcher->register('page.assets.define', function(\OpenFlame\Framework\Event\Instance $event) use($twig, $asset_manager, $language_handler) {
+	$twig_env = $twig->getEnvironment();
+	$twig_env->addGlobal('asset', new \OpenFlame\Framework\Template\Asset\Proxy($asset_manager));
+	$twig_env->addGlobal('language', new \OpenFlame\Framework\Language\Proxy($language_handler));
+}, array(), 19);
 
 // Enable invalid asset exceptions (lowest priority listener!)
 $dispatcher->register('page.assets.define', function(\OpenFlame\Framework\Event\Instance $event) use($asset_manager) {
@@ -132,13 +110,10 @@ $dispatcher->register('page.execute', function(\OpenFlame\Framework\Event\Instan
 	$processor->executePage();
 }, array(), 0);
 
-$dispatcher->register('page.display', function(\OpenFlame\Framework\Event\Instance $event) use($template) {
+$dispatcher->register('page.display', function(\OpenFlame\Framework\Event\Instance $event) use($twig, $template) {
 	$page = Core::getObject('page.instance');
-	$twig_env = Core::getObject('twig.environment');
+	$twig_env = $twig->getEnvironment();
 	$twig_page = $twig_env->loadTemplate($page->getTemplateName());
-}, array(), 0);
-
-$dispatcher->register('page.display', function(\OpenFlame\Framework\Event\Instance $event) use($template) {
 	try
 	{
 		ob_start();
