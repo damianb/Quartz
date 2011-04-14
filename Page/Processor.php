@@ -94,7 +94,7 @@ class Processor
 
 		try
 		{
-			$router->processRequest($request_uri->getClean())
+			$page = $router->processRequest($request_uri->getClean())
 				->fireCallback();
 		}
 		catch(\Codebite\Quartz\Exception\RedirectException $e)
@@ -106,10 +106,12 @@ class Processor
 		}
 		catch(\Codebite\Quartz\Exception\ServerErrorException $e)
 		{
-			$router->getErrorRoute()
+			$page = $router->getErrorRoute()
 				->setRequestDataPoint('code', ($e->getCode() ?: 500))
 				->setRequestDataPoint('message', $e->getMessage())
 				->fireCallback();
 		}
+
+		return $page;
 	}
 }
