@@ -106,13 +106,9 @@ $dispatcher->register('page.language.load', function(\OpenFlame\Framework\Event\
 	$language_handler->loadEntries($language_entries);
 }, array(), 15);
 
-$dispatcher->register('page.execute', function(\OpenFlame\Framework\Event\Instance $event) use($processor) {
-	$processor->executePage();
-}, array(), 0);
-
 $dispatcher->register('page.display', function(\OpenFlame\Framework\Event\Instance $event) use($twig, $template) {
-	$page = Core::getObject('page.instance');
 	$twig_env = $twig->getEnvironment();
+	$page = $processor->executePage();
 	$twig_page = $twig_env->loadTemplate($page->getTemplateName());
 	try
 	{
