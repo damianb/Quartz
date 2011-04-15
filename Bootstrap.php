@@ -18,6 +18,7 @@
 
 namespace Codebite\Quartz;
 use \OpenFlame\Framework\Core;
+use OpenFlame\Framework\Event\Instance as Event;
 
 /**
  * @ignore
@@ -85,7 +86,7 @@ $dispatcher->register('page.assets.define', function(\OpenFlame\Framework\Event\
 
 // Create the template proxies and load them into twig
 $dispatcher->register('page.assets.define', function(\OpenFlame\Framework\Event\Instance $event) use($twig, $asset_manager, $language_handler) {
-	$twig_env = $twig->getEnvironment();
+	$twig_env = $twig->getTwigEnvironment();
 	$twig_env->addGlobal('asset', new \OpenFlame\Framework\Template\Asset\Proxy($asset_manager));
 	$twig_env->addGlobal('language', new \OpenFlame\Framework\Language\Proxy($language_handler));
 }, array(), 19);
@@ -106,12 +107,13 @@ $dispatcher->register('page.language.load', function(\OpenFlame\Framework\Event\
 	$language_handler->loadEntries($language_entries);
 }, array(), 15);
 
-$dispatcher->register('page.display', function(\OpenFlame\Framework\Event\Instance $event) use($twig, $template) {
-	$twig_env = $twig->getEnvironment();
+$dispatcher->register('page.display', function(\OpenFlame\Framework\Event\Instance $event) use($dispatcher, $twig, $template) {
+	$twig_env = $twig->getTwigEnvironment();
 	$page = $processor->executePage();
 	$twig_page = $twig_env->loadTemplate($page->getTemplateName());
 	try
 	{
+		$dispatcher->trigger(Event::newEvent('headers.send'));
 		ob_start();
 		$twig_page->display($template->fetchAllVars());
 		ob_end_flush();
