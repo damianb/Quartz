@@ -45,6 +45,7 @@ $asset_manager = Core::setObject('asset_manager', new \OpenFlame\Framework\Templ
 $dispatcher = Core::setObject('dispatcher', new \OpenFlame\Framework\Event\Dispatcher());
 $processor = Core::setObject('processor', new \Codebite\Quartz\Page\Processor());
 $language_handler = Core::setObject('language', new \OpenFlame\Framework\Language\Handler());
+$header_manager = Core::setObject('header', new \OpenFlame\Framework\Header\Manager());
 $twig = Core::setObject('twig.frontend', new \OpenFlame\Framework\Template\Twig());
 
 // Set the base URL for HTTP stuff.
@@ -78,6 +79,11 @@ $dispatcher->register('twig.load', function(\OpenFlame\Framework\Event\Instance 
 	$twig->initTwig();
 }, array(), 10);
 
+// Snag control of the headers
+$dispatcher->register('page.headers.snag', function(\OpenFlame\Framework\Event\Instance $event) use($header_manager) {
+	$header_manager->snagHeaders();
+}, array(), 0);
+
 // Define our assets...
 $dispatcher->register('page.assets.define', function(\OpenFlame\Framework\Event\Instance $event) use($asset_manager) {
 	$asset_manager->registerJSAsset('jquery')->setURL('/style/js/jquery.min.js');
@@ -107,13 +113,18 @@ $dispatcher->register('page.language.load', function(\OpenFlame\Framework\Event\
 	$language_handler->loadEntries($language_entries);
 }, array(), 15);
 
+// Send headers
+$dispatcher->register('page.headers.send', function(\OpenFlame\Framework\Event\Instance $event) use($header_manager) {
+	$header_manager->sendHeaders();
+}, array(), 10);
+
 $dispatcher->register('page.display', function(\OpenFlame\Framework\Event\Instance $event) use($dispatcher, $twig, $template) {
 	$twig_env = $twig->getTwigEnvironment();
 	$page = $processor->executePage();
 	$twig_page = $twig_env->loadTemplate($page->getTemplateName());
 	try
 	{
-		$dispatcher->trigger(Event::newEvent('headers.send'));
+		$dispatcher->trigger(Event::newEvent('page.headers.send'));
 		ob_start();
 		$twig_page->display($template->fetchAllVars());
 		ob_end_flush();
