@@ -118,9 +118,18 @@ $dispatcher->register('page.headers.send', function(Event $event) use($header_ma
 	$header_manager->sendHeaders();
 }, array(), 10);
 
+// Execute the page logic
+$dispatcher->register('page.execute', function(Event $event) use($dispatcher, $processor) {
+	$page = $processor->run();
+	$page->executePage();
+
+	$dispatcher->trigger(Event::newEvent('page.display')->setDataPoint('page', $page));
+}, array(), 10);
+
+// Display the page
 $dispatcher->register('page.display', function(Event $event) use($dispatcher, $twig, $template) {
+	$page = $event->getDataPoint('page');
 	$twig_env = $twig->getTwigEnvironment();
-	$page = $processor->executePage();
 	$twig_page = $twig_env->loadTemplate($page->getTemplateName());
 	try
 	{
