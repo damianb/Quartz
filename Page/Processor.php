@@ -83,7 +83,7 @@ class Processor
 		return $this;
 	}
 
-	public function executePage()
+	public function run()
 	{
 		$input_handler = Core::getObject('input');
 		$router = Core::getObject('router');
