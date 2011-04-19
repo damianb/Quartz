@@ -38,6 +38,7 @@ foreach($config_data as $config_name => $config_value)
 /**
  * Load up the core objects
  */
+$timer = Core::setObject('timer', new \OpenFlame\Framework\Utility\Timer());
 $router = Core::setObject('router', new \OpenFlame\Framework\URL\Router());
 $input = Core::setObject('input', new \OpenFlame\Framework\Input\Handler());
 $template = Core::setObject('template', new \OpenFlame\Framework\Template\Variables());
@@ -91,8 +92,9 @@ $dispatcher->register('page.assets.define', function(Event $event) use($asset_ma
 }, array(), 0);
 
 // Create the template proxies and load them into twig
-$dispatcher->register('page.assets.define', function(Event $event) use($twig, $asset_manager, $language_handler) {
+$dispatcher->register('page.assets.define', function(Event $event) use($twig, $timer, $asset_manager, $language_handler) {
 	$twig_env = $twig->getTwigEnvironment();
+	$twig_env->addGlobal('timer', $timer);
 	$twig_env->addGlobal('asset', new \OpenFlame\Framework\Template\Asset\Proxy($asset_manager));
 	$twig_env->addGlobal('language', new \OpenFlame\Framework\Language\Proxy($language_handler));
 }, array(), 19);
@@ -109,7 +111,7 @@ $dispatcher->register('page.routes.load', function(Event $event) use($processor)
 
 // Load the language file
 $dispatcher->register('page.language.load', function(Event $event) use($language_handler) {
-	$language_entries = \Symfony\Component\Yaml\Yaml::load(\Codebite\Quartz\SITE_ROOT . '/data/language/en.yml');
+	$language_entries = \OpenFlame\Framework\Utility\JSON::decode(\Codebite\Quartz\SITE_ROOT . '/data/language/en.json');
 	$language_handler->loadEntries($language_entries);
 }, array(), 15);
 
@@ -123,7 +125,7 @@ $dispatcher->register('page.execute', function(Event $event) use($dispatcher, $p
 	$page = $processor->run();
 	$page->executePage();
 
-	$dispatcher->trigger(Event::newEvent('page.display')->setDataPoint('page', $page));
+	$dispatcher->triggerUntilBreak(Event::newEvent('page.display')->setDataPoint('page', $page));
 }, array(), 10);
 
 // Display the page
@@ -133,7 +135,7 @@ $dispatcher->register('page.display', function(Event $event) use($dispatcher, $t
 	$twig_page = $twig_env->loadTemplate($page->getTemplateName());
 	try
 	{
-		$dispatcher->trigger(Event::newEvent('page.headers.send'));
+		$dispatcher->triggerUntilBreak(Event::newEvent('page.headers.send'));
 		ob_start();
 		$html = $twig_page->render($template->fetchAllVars());
 		echo $html;
