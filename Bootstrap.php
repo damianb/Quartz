@@ -29,7 +29,7 @@ if(!defined('Codebite\\Quartz\\SITE_ROOT')) exit;
 set_exception_handler('\\Codebite\\Quartz\\Exception\\Handler::catcher');
 
 // Load the config file and its data.
-$config_data = \Symfony\Component\Yaml\Yaml::load(\Codebite\Quartz\SITE_ROOT . '/data/config/config.yml');
+$config_data = \OpenFlame\Framework\Utility\JSON::decode(\Codebite\Quartz\SITE_ROOT . '/data/config/config.json');
 foreach($config_data as $config_name => $config_value)
 {
 	Core::setConfig($config_name, $config_value);
@@ -58,7 +58,7 @@ $asset_manager->setBaseURL($base_url);
  */
 
 // Start up the cache subsystem.
-$dispatcher->register('cache.load', function(\OpenFlame\Framework\Event\Instance $event) {
+$dispatcher->register('cache.load', function(Event $event) {
 	$cache_engine = new \OpenFlame\Framework\Cache\Engine\EngineJSON();
 	$cache_engine->setCachePath(\Codebite\Quartz\SITE_ROOT . '/cache/');
 	$cache = Core::setObject('cache', new \OpenFlame\Framework\Cache\Driver());
@@ -66,7 +66,7 @@ $dispatcher->register('cache.load', function(\OpenFlame\Framework\Event\Instance
 }, array(), 0);
 
 // Set twig properties
-$dispatcher->register('twig.load', function(\OpenFlame\Framework\Event\Instance $event) use($twig) {
+$dispatcher->register('twig.load', function(Event $event) use($twig) {
 	$twig->setTwigRootPath(\OpenFlame\ROOT_PATH . '/vendor/Twig/lib/Twig/')
 		->setTwigCachePath(\Codebite\Quartz\SITE_ROOT . '/cache/twig/')
 		->setTwigOption('autoescape', false)
@@ -75,50 +75,50 @@ $dispatcher->register('twig.load', function(\OpenFlame\Framework\Event\Instance 
 }, array(), 0);
 
 // Load twig
-$dispatcher->register('twig.load', function(\OpenFlame\Framework\Event\Instance $event) use($twig) {
+$dispatcher->register('twig.load', function(Event $event) use($twig) {
 	$twig->initTwig();
 }, array(), 10);
 
 // Snag control of the headers
-$dispatcher->register('page.headers.snag', function(\OpenFlame\Framework\Event\Instance $event) use($header_manager) {
+$dispatcher->register('page.headers.snag', function(Event $event) use($header_manager) {
 	$header_manager->snagHeaders();
 }, array(), 0);
 
 // Define our assets...
-$dispatcher->register('page.assets.define', function(\OpenFlame\Framework\Event\Instance $event) use($asset_manager) {
+$dispatcher->register('page.assets.define', function(Event $event) use($asset_manager) {
 	$asset_manager->registerJSAsset('jquery')->setURL('/style/js/jquery.min.js');
 	$asset_manager->registerCSSAsset('common')->setURL('/style/css/common.css');
 }, array(), 0);
 
 // Create the template proxies and load them into twig
-$dispatcher->register('page.assets.define', function(\OpenFlame\Framework\Event\Instance $event) use($twig, $asset_manager, $language_handler) {
+$dispatcher->register('page.assets.define', function(Event $event) use($twig, $asset_manager, $language_handler) {
 	$twig_env = $twig->getTwigEnvironment();
 	$twig_env->addGlobal('asset', new \OpenFlame\Framework\Template\Asset\Proxy($asset_manager));
 	$twig_env->addGlobal('language', new \OpenFlame\Framework\Language\Proxy($language_handler));
 }, array(), 19);
 
 // Enable invalid asset exceptions (lowest priority listener!)
-$dispatcher->register('page.assets.define', function(\OpenFlame\Framework\Event\Instance $event) use($asset_manager) {
+$dispatcher->register('page.assets.define', function(Event $event) use($asset_manager) {
 	$asset_manager->enableInvalidAssetExceptions();
 }, array(), 20);
 
 // Load our routes.
-$dispatcher->register('page.routes.load', function(\OpenFlame\Framework\Event\Instance $event) use($processor) {
+$dispatcher->register('page.routes.load', function(Event $event) use($processor) {
 	$processor->loadRoutes();
 }, array(), 15);
 
 // Load the language file
-$dispatcher->register('page.language.load', function(\OpenFlame\Framework\Event\Instance $event) use($language_handler) {
+$dispatcher->register('page.language.load', function(Event $event) use($language_handler) {
 	$language_entries = \Symfony\Component\Yaml\Yaml::load(\Codebite\Quartz\SITE_ROOT . '/data/language/en.yml');
 	$language_handler->loadEntries($language_entries);
 }, array(), 15);
 
 // Send headers
-$dispatcher->register('page.headers.send', function(\OpenFlame\Framework\Event\Instance $event) use($header_manager) {
+$dispatcher->register('page.headers.send', function(Event $event) use($header_manager) {
 	$header_manager->sendHeaders();
 }, array(), 10);
 
-$dispatcher->register('page.display', function(\OpenFlame\Framework\Event\Instance $event) use($dispatcher, $twig, $template) {
+$dispatcher->register('page.display', function(Event $event) use($dispatcher, $twig, $template) {
 	$twig_env = $twig->getTwigEnvironment();
 	$page = $processor->executePage();
 	$twig_page = $twig_env->loadTemplate($page->getTemplateName());
@@ -126,7 +126,8 @@ $dispatcher->register('page.display', function(\OpenFlame\Framework\Event\Instan
 	{
 		$dispatcher->trigger(Event::newEvent('page.headers.send'));
 		ob_start();
-		$twig_page->display($template->fetchAllVars());
+		$html = $twig_page->render($template->fetchAllVars());
+		echo $html;
 		ob_end_flush();
 	}
 	catch(Exception $e)
