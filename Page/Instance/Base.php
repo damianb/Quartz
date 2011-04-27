@@ -36,7 +36,7 @@ abstract class Base
 
 	protected $template_name = '';
 
-	public function setRoute(\OpenFlame\Framework\URL\RouteInstance $route)
+	public function setRoute(\OpenFlame\Framework\Router\RouteInstance $route)
 	{
 		$this->route = $route;
 		return $this;
@@ -47,7 +47,7 @@ abstract class Base
 		return Core::setObject('page.instance', new static());
 	}
 
-	public static function newRoutedInstance(\OpenFlame\Framework\URL\RouteInstance $route)
+	public static function newRoutedInstance(\OpenFlame\Framework\Router\RouteInstance $route)
 	{
 		$self = static::newInstance();
 		$self->setRoute($route)
