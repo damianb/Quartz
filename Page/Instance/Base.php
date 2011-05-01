@@ -50,8 +50,7 @@ abstract class Base
 	public static function newRoutedInstance(\OpenFlame\Framework\Router\RouteInstance $route)
 	{
 		$self = static::newInstance();
-		$self->setRoute($route)
-			->executePage();
+		$self->setRoute($route);
 
 		return $self;
 	}
