@@ -59,10 +59,13 @@ $exception_page = '
 \OpenFlame\Framework\Exception\Handler::setPageFormat($exception_page);
 
 // Load the config file and its data.
-$config_data = JSON::decode(\Codebite\Quartz\SITE_ROOT . '/data/config/config.json');
-foreach($config_data as $config_name => $config_value)
+if(file_exists(\Codebite\Quartz\SITE_ROOT . '/data/config/config.json'))
 {
-	Core::setConfig($config_name, $config_value);
+	$config_data = JSON::decode(\Codebite\Quartz\SITE_ROOT . '/data/config/config.json');
+	foreach($config_data as $config_name => $config_value)
+	{
+		Core::setConfig($config_name, $config_value);
+	}
 }
 
 /**
@@ -77,6 +80,7 @@ $dispatcher = Core::setObject('dispatcher', new \OpenFlame\Framework\Event\Dispa
 $processor = Core::setObject('processor', new \Codebite\Quartz\Page\Processor());
 $language_handler = Core::setObject('language', new \OpenFlame\Framework\Language\Handler());
 $header_manager = Core::setObject('header', new \OpenFlame\Framework\Header\Manager());
+$url_builder = Core::setObject('url_builder', new \OpenFlame\Framework\URL\Builder());
 $twig = Core::setObject('twig.frontend', new \OpenFlame\Framework\Twig\Wrapper());
 
 // Set the base URL for HTTP stuff.
