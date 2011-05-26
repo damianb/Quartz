@@ -94,7 +94,7 @@ $asset_manager->setBaseURL($base_url);
 
 // Start up the cache subsystem.
 $dispatcher->register('cache.load', 0, function(Event $event) {
-	$cache_engine = new \OpenFlame\Framework\Cache\Engine\EngineJSON();
+	$cache_engine = new \OpenFlame\Framework\Cache\Engine\File\FileEngineJSON();
 	$cache_engine->setCachePath(\Codebite\Quartz\SITE_ROOT . '/cache/');
 	$cache = Core::setObject('cache', new \OpenFlame\Framework\Cache\Driver());
 	$cache->setEngine($cache_engine);
