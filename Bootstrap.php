@@ -68,51 +68,94 @@ if(file_exists(\Codebite\Quartz\SITE_ROOT . '/data/config/config.json'))
 	}
 }
 
+// Get the base URL for HTTP stuff.
+$base_url = Core::getConfig('page.base_url') ?: '/';
+
 /**
- * Load up the core objects
+ * Load up some core objects, and setup the injectors for what we don't absolutely need.
+ * recommended commit: fae7e2f315c8699cf1367035682c3068899f8c92
  */
 $timer = Core::setObject('timer', new \OpenFlame\Framework\Utility\Timer());
-$router = Core::setObject('router', new \OpenFlame\Framework\Router\Router());
-$input = Core::setObject('input', new \OpenFlame\Framework\Input\Handler());
-$template = Core::setObject('template', new \OpenFlame\Framework\Twig\Variables());
-$asset_manager = Core::setObject('asset_manager', new \OpenFlame\Framework\Asset\Manager());
-$dispatcher = Core::setObject('dispatcher', new \OpenFlame\Framework\Event\Dispatcher());
-$processor = Core::setObject('processor', new \Codebite\Quartz\Page\Processor());
-$language_handler = Core::setObject('language', new \OpenFlame\Framework\Language\Handler());
-$header_manager = Core::setObject('header', new \OpenFlame\Framework\Header\Manager());
-$url_builder = Core::setObject('url_builder', new \OpenFlame\Framework\URL\Builder());
-$twig = Core::setObject('twig.frontend', new \OpenFlame\Framework\Twig\Wrapper());
+$injector = \OpenFlame\Framework\Dependency\Injector::getInjector();
 
-// Set the base URL for HTTP stuff.
-$base_url = Core::getConfig('page.base_url') ?: '/';
-$router->setBaseURL($base_url);
-$asset_manager->setBaseURL($base_url);
+$injector->setInjector('router', function() use($base_url) {
+    $router = new \OpenFlame\Framework\Router\Router();
+    $router->setBaseURL($base_url);
+    return $router;
+});
+
+$injector->setInjector('input', function() {
+    return new \OpenFlame\Framework\Input\Handler();
+});
+
+$injector->setInjector('template', function() {
+    return new \OpenFlame\Framework\Twig\Variables();
+});
+
+$injector->setInjector('asset_manager', function() use($asset_manager) {
+    $asset_manager = new \OpenFlame\Framework\Asset\Manager();
+    $asset_manager->setBaseURL($base_url);
+    return $asset_manager;
+});
+
+$injector->setInjector('dispatcher', function() {
+    return new \OpenFlame\Framework\Event\Dispatcher();
+});
+
+$injector->setInjector('processor', function() {
+    return new \Codebite\Quartz\Page\Processor();
+});
+
+$injector->setInjector('language', function() {
+    return new \OpenFlame\Framework\Language\Handler();
+});
+
+$injector->setInjector('header', function() {
+    return new \OpenFlame\Framework\Header\Manager();
+});
+
+$injector->setInjector('url_builder', function() {
+    return new \OpenFlame\Framework\URL\Builder();
+});
+
+$injector->setInjector('twig', function() {
+    $twig = new \OpenFlame\Framework\Twig\Wrapper();
+    $twig->setTwigRootPath(\OpenFlame\ROOT_PATH . '/vendor/Twig/lib/Twig/')
+    	->setTwigCachePath(\Codebite\Quartz\SITE_ROOT . '/cache/twig/')
+		->setTemplatePath(\Codebite\Quartz\SITE_ROOT . '/data/template/')
+    	->setTwigOption('debug', true);
+    $twig->initTwig();
+    
+    return $twig;
+});
+
+$injector->setInjector('cache', function() {
+    $cache_engine = new \OpenFlame\Framework\Cache\Engine\File\FileEngineJSON();
+    $cache_engine->setCachePath(\Codebite\Quartz\SITE_ROOT . '/cache/');
+	$cache = new \OpenFlame\Framework\Cache\Driver();
+	$cache->setEngine($cache_engine);
+    return $cache;
+});
 
 /**
  * Define our various core event listeners here
  */
 
-// Start up the cache subsystem.
-$dispatcher->register('cache.load', 0, function(Event $event) {
-	$cache_engine = new \OpenFlame\Framework\Cache\Engine\File\FileEngineJSON();
-	$cache_engine->setCachePath(\Codebite\Quartz\SITE_ROOT . '/cache/');
-	$cache = Core::setObject('cache', new \OpenFlame\Framework\Cache\Driver());
-	$cache->setEngine($cache_engine);
+$dispatcher = $injector->get('dispatcher');
+
+
+// Create the template proxies and load them into twig
+$dispatcher->register('page.assets.define', 19, function(Event $event) use($injector) {
+    $twig = $injector->get('
+    $timer = $injector->get('timer');
+    $asset_manager = $injector->get('asset_manager');
+    $language = $injector->get('language');
+    $twig_env = $twig->getTwigEnvironment();
+	$twig_env->addGlobal('timer', $timer);
+	$twig_env->addGlobal('asset', new \OpenFlame\Framework\Asset\Proxy($asset_manager));
+	$twig_env->addGlobal('language', new \OpenFlame\Framework\Language\Proxy($language_handler));
 });
 
-// Set twig properties
-$dispatcher->register('twig.load', 0, function(Event $event) use($twig) {
-	$twig->setTwigRootPath(\OpenFlame\ROOT_PATH . '/vendor/Twig/lib/Twig/')
-		->setTwigCachePath(\Codebite\Quartz\SITE_ROOT . '/cache/twig/')
-		//->setTwigOption('autoescape', false)
-		->setTwigOption('debug', true)
-		->setTemplatePath(\Codebite\Quartz\SITE_ROOT . '/data/template/');
-});
-
-// Load twig
-$dispatcher->register('twig.load', 10, function(Event $event) use($twig) {
-	$twig->initTwig();
-});
 
 // Snag control of the headers
 $dispatcher->register('page.headers.snag', 0, function(Event $event) use($header_manager) {
@@ -123,14 +166,6 @@ $dispatcher->register('page.headers.snag', 0, function(Event $event) use($header
 $dispatcher->register('page.assets.define', 0, function(Event $event) use($asset_manager) {
 	$asset_manager->registerJSAsset('jquery')->setURL('/style/js/jquery.min.js');
 	$asset_manager->registerCSSAsset('common')->setURL('/style/css/common.css');
-});
-
-// Create the template proxies and load them into twig
-$dispatcher->register('page.assets.define', 19, function(Event $event) use($twig, $timer, $asset_manager, $language_handler) {
-	$twig_env = $twig->getTwigEnvironment();
-	$twig_env->addGlobal('timer', $timer);
-	$twig_env->addGlobal('asset', new \OpenFlame\Framework\Asset\Proxy($asset_manager));
-	$twig_env->addGlobal('language', new \OpenFlame\Framework\Language\Proxy($language_handler));
 });
 
 // Enable invalid asset exceptions (lowest priority listener!)
