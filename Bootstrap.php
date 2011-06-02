@@ -92,7 +92,7 @@ $injector->setInjector('template', function() {
     return new \OpenFlame\Framework\Twig\Variables();
 });
 
-$injector->setInjector('asset_manager', function() use($asset_manager) {
+$injector->setInjector('asset_manager', function() use($base_url) {
     $asset_manager = new \OpenFlame\Framework\Asset\Manager();
     $asset_manager->setBaseURL($base_url);
     return $asset_manager;
@@ -118,6 +118,13 @@ $injector->setInjector('url_builder', function() {
     return new \OpenFlame\Framework\URL\Builder();
 });
 
+$injector->setInjector('hasher', function() {
+	return new \OpenFlame\Framework\Security\Hasher();
+});
+$injector->setInjector('seeder', function() {
+	return new \OpenFlame\Framework\Security\Seeder();
+});
+
 $injector->setInjector('twig', function() {
     $twig = new \OpenFlame\Framework\Twig\Wrapper();
     $twig->setTwigRootPath(\OpenFlame\ROOT_PATH . '/vendor/Twig/lib/Twig/')
@@ -125,7 +132,7 @@ $injector->setInjector('twig', function() {
 		->setTemplatePath(\Codebite\Quartz\SITE_ROOT . '/data/template/')
     	->setTwigOption('debug', true);
     $twig->initTwig();
-    
+
     return $twig;
 });
 
@@ -146,7 +153,7 @@ $dispatcher = $injector->get('dispatcher');
 
 // Create the template proxies and load them into twig
 $dispatcher->register('page.assets.define', 19, function(Event $event) use($injector) {
-    $twig = $injector->get('
+    $twig = $injector->get('twig');
     $timer = $injector->get('timer');
     $asset_manager = $injector->get('asset_manager');
     $language = $injector->get('language');
