@@ -74,10 +74,10 @@ $base_url = Core::getConfig('page.base_url') ?: '/';
 
 /**
  * Load up some core objects, and setup the injectors for what we don't absolutely need.
- * recommended commit: fae7e2f315c8699cf1367035682c3068899f8c92
+ * recommended openflame framework commit: fae7e2f315c8699cf1367035682c3068899f8c92
  */
 $timer = Core::setObject('timer', new \OpenFlame\Framework\Utility\Timer());
-$injector = Injector::getInjector();
+$injector = Injector::getInstance();
 
 $injector->setInjector('router', function() use($base_url) {
     $router = new \OpenFlame\Framework\Router\Router();
@@ -160,9 +160,7 @@ $injector->setInjector('cache', function() use($injector) {
 /**
  * Define our various core event listeners here
  */
-
 $dispatcher = $injector->get('dispatcher');
-
 
 // Create the template proxies and load them into twig
 $dispatcher->register('page.assets.define', 18, function(Event $event) use($injector) {
