@@ -239,7 +239,7 @@ $dispatcher->register('page.display', 10, function(Event $event) use($injector) 
 		echo $html;
 		ob_end_flush();
 	}
-	catch(Exception $e)
+	catch(\Exception $e)
 	{
 		ob_clean();
 		throw $e;
