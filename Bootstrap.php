@@ -74,7 +74,8 @@ $base_url = Core::getConfig('page.base_url') ?: '/';
 
 /**
  * Load up some core objects, and setup the injectors for what we don't absolutely need.
- * recommended openflame framework commit: fae7e2f315c8699cf1367035682c3068899f8c92
+ * recomended git repo: git://github.com/damianb/OpenFlame-Framework.git
+ * recommended commit id: e5ab6d02f7c3ac4dcb1f8006fc377b59f3f137f9
  */
 $timer = Core::setObject('timer', new \OpenFlame\Framework\Utility\Timer());
 $injector = Injector::getInstance();
