@@ -125,7 +125,7 @@ $injector->setInjector('header', function() {
 });
 
 $injector->setInjector('url_builder', function() use($base_url) {
-    $url = \OpenFlame\Framework\URL\Builder();
+    $url = new \OpenFlame\Framework\URL\Builder();
 	$url->setBaseURL($base_url);
 	return $url;
 });
