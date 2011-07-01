@@ -124,8 +124,14 @@ $injector->setInjector('header', function() {
     return new \OpenFlame\Framework\Header\Manager();
 });
 
-$injector->setInjector('url_builder', function() {
-    return new \OpenFlame\Framework\URL\Builder();
+$injector->setInjector('url_builder', function() use($base_url) {
+    $url = \OpenFlame\Framework\URL\Builder();
+	$url->setBaseURL($base_url);
+	return $url;
+});
+
+$injector->setInjector('url_proxy', function() use($injector) {
+    return new \OpenFlame\Framework\URL\BuilderProxy($injector->get('url_builder'));
 });
 
 $injector->setInjector('hasher', function() {
@@ -171,6 +177,7 @@ $dispatcher->register('page.assets.define', 18, function(Event $event) use($inje
 	$twig_env->addGlobal('timer', $injector->get('timer'));
 	$twig_env->addGlobal('asset', $injector->get('asset_proxy'));
 	$twig_env->addGlobal('language', $injector->get('language_proxy'));
+	$twig_env->addGlobal('url', $injector->get('url_proxy'));
 });
 
 // Define our assets...
