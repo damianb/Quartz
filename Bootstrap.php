@@ -18,54 +18,34 @@
 
 namespace Codebite\Quartz;
 use OpenFlame\Framework\Core;
-use OpenFlame\Framework\Event\Instance as Event;
-use OpenFlame\Framework\Utility\JSON;
 use OpenFlame\Framework\Dependency\Injector;
+use OpenFlame\Framework\Event\Instance as Event;
+use OpenFlame\Framework\Exception\Handler as ExceptionHandler;
+use OpenFlame\Framework\Utility\JSON;
+use OpenFlame\Dbal\Connection as DbalConnection;
 
 /**
  * @ignore
  */
 if(!defined('Codebite\\Quartz\\SITE_ROOT')) exit;
 
-$exception_page = '
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr">
-	<head>
-		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-		<title>%1$s</title>
-		<style type="text/css">
-			/* <![CDATA[ */
-			* { margin: 0; padding: 0; } html { font-size: 100%%; height: 100%%; margin-bottom: 1px; background-color: #FFFFFF; } body { font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif; color: #825353; background: #FFFFFF; font-size: 62.5%%; margin: 0; } a:link, a:active, a:visited { color: #006699; text-decoration: none; } a:hover { color: #DD6900; text-decoration: underline; } #wrap { padding: 0 20px 15px 20px; min-width: 700px; } #page-header { text-align: right; height: 40px; } #page-footer { clear: both; font-size: 1em; text-align: center; } .panel { margin: 4px 0; background-color: #FEEFDA; border: solid 1px #F7941D; /*height: 330px;*/ } #errorpage #page-header a { font-weight: bold; line-height: 6em; } #errorpage #content { padding: 14px; } #errorpage h1 { line-height: 1.2em; margin: 0 45px 15px; color: #000000; } #errorpage #content div { margin-top: 10px; margin-bottom: 5px; padding-bottom: 5px; color: #333333; font: bold 1.15em "Lucida Grande", Arial, Helvetica, sans-serif; text-decoration: none; line-height: 120%%;} #errorpage #content #backtrace { border-top: 1px solid #CCCCCC; border-bottom: 1px solid #CCCCCC; }
-			* .round { -moz-border-radius-bottomleft: 4px; -moz-border-radius-bottomright: 10px; -moz-border-radius-topleft: 10px; -moz-border-radius-topright: 4px; -webkit-border-bottom-left-radius: 4px; -webkit-border-bottom-right-radius: 10px; -webkit-border-top-left-radius: 10px; -webkit-border-top-right-radius: 4px; border-radius-bottomleft: 4px; border-radius-bottomright: 10px; border-radius-topleft: 10px; border-radius-topright: 4px; }
-			* .syntaxbg { color: #FFFFFF; } .syntaxcomment { color: #FF8000; } .syntaxdefault { color: #0000BB; } .syntaxhtml { color: #000000; } .syntaxkeyword { color: #007700; } .syntaxstring { color: #DD0000; }
-			* .logo { display: block; margin-left: auto; margin-right: auto; }
-			/* ]]> */
-		</style>
-	</head>
-	<body id="errorpage">
-		<div id="wrap">
-			<div id="page-header"></div>
-			<div id="acp">
-				<div class="panel round">
-					<div id="content">
-						<h2>%1$s</h2>
-
-						<div>%2$s</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</body>
-</html>';
-\OpenFlame\Framework\Exception\Handler::setPageFormat($exception_page);
+$timer = Core::setObject('timer', new \OpenFlame\Framework\Utility\Timer());
 
 // Load the config file and its data.
-if(file_exists(\Codebite\Quartz\SITE_ROOT . '/data/config/config.json'))
+$configs = array(
+	'assets',
+	'routes',
+	'config',
+);
+foreach($configs as $config_file)
 {
-	$config_data = JSON::decode(\Codebite\Quartz\SITE_ROOT . '/data/config/config.json');
-	foreach($config_data as $config_name => $config_value)
+	if(file_exists(\Codebite\Quartz\SITE_ROOT . '/data/config/' . $config_file . '.json'))
 	{
-		Core::setConfig($config_name, $config_value);
+		$config_data = JSON::decode(\Codebite\Quartz\SITE_ROOT . '/data/config/' . $config_file . '.json');
+		foreach($config_data as $config_name => $config_value)
+		{
+			Core::setConfig($config_name, $config_value);
+		}
 	}
 }
 
@@ -77,7 +57,7 @@ $base_url = Core::getConfig('page.base_url') ?: '/';
  * recomended git repo: git://github.com/damianb/OpenFlame-Framework.git
  * recommended commit id: e5ab6d02f7c3ac4dcb1f8006fc377b59f3f137f9
  */
-$timer = Core::setObject('timer', new \OpenFlame\Framework\Utility\Timer());
+
 $injector = Injector::getInstance();
 
 $injector->setInjector('router', function() use($base_url) {
@@ -112,12 +92,12 @@ $injector->setInjector('processor', function() {
     return new \Codebite\Quartz\Page\Processor();
 });
 
-$injector->setInjector('language_proxy', function() use($injector) {
-    return new \OpenFlame\Framework\Language\Proxy($injector->get('language'));
-});
-
 $injector->setInjector('language', function() {
     return new \OpenFlame\Framework\Language\Handler();
+});
+
+$injector->setInjector('language_proxy', function() use($injector) {
+    return new \OpenFlame\Framework\Language\Proxy($injector->get('language'));
 });
 
 $injector->setInjector('header', function() {
@@ -146,7 +126,7 @@ $injector->setInjector('twig', function() {
     $twig->setTwigRootPath(\OpenFlame\ROOT_PATH . '/vendor/Twig/lib/Twig/')
 		->setTwigCachePath((Core::getConfig('twig.cache_path') ?: \Codebite\Quartz\SITE_ROOT . '/cache/twig/'))
 		->setTemplatePath((Core::getConfig('twig.template_path') ?: \Codebite\Quartz\SITE_ROOT . '/data/template/'))
-		->setTwigOption('debug', (Core::getConfig('twig.debug') ?: true));
+		->setTwigOption('debug', (Core::getConfig('twig.debug') ?: false));
     $twig->initTwig();
 
     return $twig;
@@ -169,6 +149,146 @@ $injector->setInjector('cache', function() use($injector) {
  */
 $dispatcher = $injector->get('dispatcher');
 
+// Prepare the exception handler
+$dispatcher->register('exception.setup', 5, function(Event $event) use($dispatcher) {
+	$exception_page = '
+	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+	<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr">
+		<head>
+			<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+			<title>%1$s</title>
+			<style type="text/css">
+				/* <![CDATA[ */
+				* { margin: 0; padding: 0; } html { font-size: 100%%; height: 100%%; margin-bottom: 1px; background-color: #FFFFFF; } body { font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif; color: #825353; background: #FFFFFF; font-size: 62.5%%; margin: 0; } a:link, a:active, a:visited { color: #006699; text-decoration: none; } a:hover { color: #DD6900; text-decoration: underline; } #wrap { padding: 0 20px 15px 20px; min-width: 700px; } #page-header { text-align: right; height: 40px; } #page-footer { clear: both; font-size: 1em; text-align: center; } .panel { margin: 4px 0; background-color: #FEEFDA; border: solid 1px #F7941D; /*height: 330px;*/ } #errorpage #page-header a { font-weight: bold; line-height: 6em; } #errorpage #content { padding: 14px; } #errorpage h1 { line-height: 1.2em; margin: 0 45px 15px; color: #000000; } #errorpage #content div { margin-top: 10px; margin-bottom: 5px; padding-bottom: 5px; color: #333333; font: bold 1.15em "Lucida Grande", Arial, Helvetica, sans-serif; text-decoration: none; line-height: 120%%;} #errorpage #content #backtrace { border-top: 1px solid #CCCCCC; border-bottom: 1px solid #CCCCCC; }
+				* .round { -moz-border-radius-bottomleft: 4px; -moz-border-radius-bottomright: 10px; -moz-border-radius-topleft: 10px; -moz-border-radius-topright: 4px; -webkit-border-bottom-left-radius: 4px; -webkit-border-bottom-right-radius: 10px; -webkit-border-top-left-radius: 10px; -webkit-border-top-right-radius: 4px; border-radius-bottomleft: 4px; border-radius-bottomright: 10px; border-radius-topleft: 10px; border-radius-topright: 4px; }
+				* .syntaxbg { color: #FFFFFF; } .syntaxcomment { color: #FF8000; } .syntaxdefault { color: #0000BB; } .syntaxhtml { color: #000000; } .syntaxkeyword { color: #007700; } .syntaxstring { color: #DD0000; }
+				* .logo { display: block; margin-left: auto; margin-right: auto; }
+				/* ]]> */
+			</style>
+		</head>
+		<body id="errorpage">
+			<div id="wrap">
+				<div id="page-header"></div>
+				<div id="acp">
+					<div class="panel round">
+						<div id="content">
+							<h2>%1$s</h2>
+
+							<div>%2$s</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</body>
+	</html>';
+	ExceptionHandler::setPageFormat($exception_page);
+	ExceptionHandler::setUnwrapCount(1);
+});
+
+// Enable debug mode
+$dispatcher->register('debug.enable', 5, function(Event $event) use($dispatcher) {
+	// Store the old error_reporting() setting
+	Core::setConfig('site.defaultdebug', @error_reporting());
+
+	// Force errors to be displayed
+	@error_reporting(E_ALL);
+	@ini_set("display_errors", "On");
+
+	ExceptionHandler::enableDebug();
+});
+
+// Disable debug mode
+$dispatcher->register('debug.disable', 5, function(Event $event) use($dispatcher) {
+	// Restore the old error_reporting() setting if it was altered by us
+	$error_level = Core::getConfig('site.defaultdebug');
+	if($error_level !== NULL)
+	{
+		@error_reporting($error_level);
+	}
+	@ini_set("display_errors", "Off");
+
+	ExceptionHandler::disableDebug();
+});
+
+
+// This event hides that we're running PHP
+$dispatcher->register('page.hidephp', 0, function(Event $event) use($injector) {
+	$header_manager = $injector->get('header');
+	$header_manager->removeHeader('X-Powered-By');
+});
+
+// Easily connect to an sqlite database using the OpenFlame Dbal
+$dispatcher->register('db.sqlite.connect', 0, function(Event $event) use($injector) {
+	$dsn = 'sqlite:' . Core::getConfig('db.file');
+	$connection = DbalConnection::getInstance()
+		->connect($dsn);
+});
+
+// Easily connect to a mysql database using the OpenFlame Dbal
+$dispatcher->register('db.mysql.connect', 0, function(Event $event) use($injector) {
+	$dsn = 'mysql:host=' . (Core::getConfig('db.host') ?: 'localhost') . ';dbname=' . Core::getConfig('db.name');
+	$username = Core::getConfig('db.username');
+	$password = Core::getConfig('db.password') ?: '';
+	$options = array(
+		\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8',
+	);
+	$connection = DbalConnection::getInstance()
+		->connect($dsn, $username, $password, $options);
+});
+
+// Easily connect to a postgresql database using the OpenFlame Dbal
+$dispatcher->register('db.postgresql.connect', 0, function(Event $event) use($injector) {
+	$dsn = 'pgsql:host=' . (Core::getConfig('db.host') ?: 'localhost') . ';dbname=' . Core::getConfig('db.name');
+	$username = Core::getConfig('db.username');
+	$password = Core::getConfig('db.password') ?: '';
+	$connection = DbalConnection::getInstance()
+		->connect($dsn, $username, $password);
+});
+
+// Automagically define assets provided in the config file.
+$dispatcher->register('page.assets.autodefine', 5, function(Event $event) use($injector) {
+	$asset_manager = $injector->get('asset');
+
+	$asset_path = rtrim(Core::getConfig('site.path.assets') ?: '/style/', '/');
+	$assets = Core::getConfig('site.assets');
+
+	foreach($assets as $type => $_assets)
+	{
+		foreach($_assets as $asset_name => $asset_url)
+		{
+			$asset_manager->registerCustomAsset($type, $asset_name)
+				->setURL($asset_path . '/' . $asset_url);
+		}
+	}
+});
+
+$dispatcher->register('page.routes.load', 5, function(Event $event) use($injector) {
+	$cache = $injector->get('cache');
+	$router = $injector->get('router');
+
+	if($cache->dataCached('page_routes'))
+	{
+		$route_data = $cache->loadData('page_routes');
+		$router->loadFromFullRouteCache($route_data);
+	}
+	else
+	{
+		// Grab the page routes from the config
+		$routes = Core::getConfig('site.routes');
+		$router->newRoutes($routes);
+
+		$home = $router->newRoute($routes['home']['path'], $routes['home']['callback']);
+		$router->storeRoute($home)
+			->setHomeRoute($home);
+
+		$error = $router->newRoute($routes['error']['path'], $routes['error']['callback']);
+		$router->storeRoute($error)
+			->setErrorRoute($error);
+
+		$cache->storeData('page_routes', $router->getFullRouteCache());
+	}
+});
+
 // Create the template proxies and load them into twig
 $dispatcher->register('page.assets.define', 18, function(Event $event) use($injector) {
     $twig = $injector->get('twig');
@@ -180,29 +300,16 @@ $dispatcher->register('page.assets.define', 18, function(Event $event) use($inje
 	$twig_env->addGlobal('url', $injector->get('url_proxy'));
 });
 
-// Define our assets...
-$dispatcher->register('page.assets.define', 0, function(Event $event) use($injector) {
-	$asset_manager = $injector->get('asset');
-	$asset_manager->registerJSAsset('jquery')->setURL('/style/js/jquery.min.js');
-	$asset_manager->registerCSSAsset('common')->setURL('/style/css/common.css');
-});
-
-// Enable invalid asset exceptions (lowest priority listener!)
+// Enable invalid asset exceptions (low priority listener!)
 $dispatcher->register('page.assets.define', 19, function(Event $event) use($injector) {
 	$asset_manager = $injector->get('asset');
 	$asset_manager->enableInvalidAssetExceptions();
 });
 
-// Load our routes.
-$dispatcher->register('page.routes.load', 15, function(Event $event) use($injector) {
-	$processor = $injector->get('processor');
-	$processor->loadRoutes();
-});
-
 // Load the language file
 $dispatcher->register('page.language.load', 15, function(Event $event) use($injector) {
 	$language = $injector->get('language');
-	$language_entries = JSON::decode((Core::getConfig('language.file') ?: \Codebite\Quartz\SITE_ROOT . '/data/language/en.json'));
+	$language_entries = JSON::decode((Core::getConfig('language.file') ?: \Codebite\Quartz\SITE_ROOT . '/data/language/en-us.json'));
 	$language->loadEntries($language_entries);
 });
 
@@ -215,19 +322,55 @@ $dispatcher->register('page.headers.snag', 0, function(Event $event) use($inject
 // Send headers
 $dispatcher->register('page.headers.send', 10, function(Event $event) use($injector) {
 	$header_manager = $injector->get('header');
-	$header_manager->sendHeaders();
+
+	// Don't send headers if they've already been sent
+	if(!$header_manager->headersSent(false))
+	{
+		$header_manager->sendHeaders();
+	}
+});
+
+// touch the $_SERVER superglobal so that the input handler can make use of it
+$dispatcher->register('page.execute', -20, function(Event $event) use($injector) {
+	$_SERVER;
 });
 
 // Execute the page logic
 $dispatcher->register('page.execute', 10, function(Event $event) use($injector) {
-	$processor = $injector->get('processor');
 	$dispatcher = $injector->get('dispatcher');
+	$input_handler = $injector->get('input');
+	$router = $injector->get('router');
+	$header_manager = $injector->get('header');
 
-	$page = $processor->run();
+	//$page = $processor->run();
+	$request_uri = $input_handler->getInput('SERVER::REQUEST_URI')
+		->setDefault('/')
+		->disableFieldJuggling();
+
+	try
+	{
+		$page = $router->processRequest($request_uri->getClean())
+			->fireCallback();
+	}
+	catch(\Codebite\Quartz\Exception\RedirectException $e)
+	{
+		// @todo use header manager object here
+		// *punt* WHEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE~
+		header("HTTP/1.1 301 Moved Permanently");
+		header("Location: " . $e->getMessage());
+		exit;
+	}
+	catch(\Codebite\Quartz\Exception\ServerErrorException $e)
+	{
+		$page = $router->getErrorRoute()
+			->setRequestDataPoint('code', ($e->getCode() ?: 500))
+			->setRequestDataPoint('message', $e->getMessage())
+			->fireCallback();
+	}
 	$page->executePage();
 
 	Core::setObject('page', $page);
-	$dispatcher->triggerUntilBreak(Event::newEvent('page.display'));
+	//$dispatcher->triggerUntilBreak(Event::newEvent('page.display'));
 });
 
 // Display the page
@@ -241,6 +384,7 @@ $dispatcher->register('page.display', 10, function(Event $event) use($injector) 
 	$twig_page = $twig_env->loadTemplate($page->getTemplateName());
 	try
 	{
+		// send headers first
 		$dispatcher->triggerUntilBreak(Event::newEvent('page.headers.send'));
 		ob_start();
 		$html = $twig_page->render($template->fetchAllVars());
