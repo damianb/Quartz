@@ -79,11 +79,22 @@ example global config file (`data/config/config.json`)
 }
 ```
 
+## constants
+
+The constant `\Codebite\Quartz\SITE_ROOT` must be defined in the application, and it must be the root directory of the application itself.
+
+This is the suggested method of defining the constant:
+
+```
+    define('Codebite\Quartz\SITE_ROOT', __DIR__);
+```
+
 ## config settings
 * *page.base_url* **default "/"** - The base URL to use for the router, asset manager, and url builder.
 * *db.file* - The SQLite file to connect to (only needed if using the sqlite dbms)
-* *twig.cache_path* **default "/cache/twig/"** - The directory to use for the Twig cache.
-* *twig.template_path* **default "/data/template/"** - The directory to use for loading Twig template files from.
+* *twig.lib_path* **default \Codebite\Quartz\SITE_ROOT . "/includes/vendor/Twig/lib/Twig/"** - The directory to use for the Twig cache.
+* *twig.cache_path* **default \Codebite\Quartz\SITE_ROOT . "/cache/twig/"** - The directory to use for the Twig cache.
+* *twig.template_path* **default \Codebite\Quartz\SITE_ROOT . "/data/template/"** - The directory to use for loading Twig template files from.
 * *twig.debug* **default false** - Enable/disable twig's debug mode.
 * *db.host* **default "localhost"** - Database host to connect to (for mysql and pgsql)
 * *db.name* - The name of the database to connect to.

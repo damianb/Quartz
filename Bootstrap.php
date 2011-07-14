@@ -123,7 +123,7 @@ $injector->setInjector('seeder', function() {
 
 $injector->setInjector('twig', function() {
     $twig = new \OpenFlame\Framework\Twig\Wrapper();
-    $twig->setTwigRootPath(\OpenFlame\ROOT_PATH . '/vendor/Twig/lib/Twig/')
+    $twig->setTwigRootPath(Core::getConfig('twig.lib_path') ?: \Codebite\Quartz\SITE_ROOT . '/includes/vendor/Twig/lib/Twig/')
 		->setTwigCachePath((Core::getConfig('twig.cache_path') ?: \Codebite\Quartz\SITE_ROOT . '/cache/twig/'))
 		->setTemplatePath((Core::getConfig('twig.template_path') ?: \Codebite\Quartz\SITE_ROOT . '/data/template/'))
 		->setTwigOption('debug', (Core::getConfig('twig.debug') ?: false));
