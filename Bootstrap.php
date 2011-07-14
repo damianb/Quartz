@@ -257,7 +257,7 @@ $dispatcher->register('page.assets.autodefine', 5, function(Event $event) use($i
 		foreach($_assets as $asset_name => $asset_url)
 		{
 			$asset_manager->registerCustomAsset($type, $asset_name)
-				->setURL($asset_path . '/' . $asset_url);
+				->setURL($asset_path . '/' . $type . '/' . $asset_url);
 		}
 	}
 });
