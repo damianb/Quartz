@@ -342,7 +342,6 @@ $dispatcher->register('page.execute', 10, function(Event $event) use($injector) 
 	$router = $injector->get('router');
 	$header_manager = $injector->get('header');
 
-	//$page = $processor->run();
 	$request_uri = $input_handler->getInput('SERVER::REQUEST_URI')
 		->setDefault('/')
 		->disableFieldJuggling();
