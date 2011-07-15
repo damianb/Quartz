@@ -346,10 +346,13 @@ $dispatcher->register('page.execute', 10, function(Event $event) use($injector) 
 		->setDefault('/')
 		->disableFieldJuggling();
 
+	$page = $router->processRequest($request_uri->getClean())
+		->fireCallback();
+	Core::setObject('page', $page);
+
 	try
 	{
-		$page = $router->processRequest($request_uri->getClean())
-			->fireCallback();
+		$page->executePage();
 	}
 	catch(\Codebite\Quartz\Exception\RedirectException $e)
 	{
@@ -365,9 +368,8 @@ $dispatcher->register('page.execute', 10, function(Event $event) use($injector) 
 			->setRequestDataPoint('code', ($e->getCode() ?: 500))
 			->setRequestDataPoint('message', $e->getMessage())
 			->fireCallback();
+		Core::setObject('page', $page);
 	}
-	Core::setObject('page', $page);
-	$page->executePage();
 });
 
 // Display the page
