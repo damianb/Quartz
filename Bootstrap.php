@@ -368,6 +368,7 @@ $dispatcher->register('page.execute', 10, function(Event $event) use($injector) 
 			->setRequestDataPoint('code', ($e->getCode() ?: 500))
 			->setRequestDataPoint('message', $e->getMessage())
 			->fireCallback();
+		$page->executePage();
 		Core::setObject('page', $page);
 	}
 });
