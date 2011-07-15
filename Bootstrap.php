@@ -367,10 +367,8 @@ $dispatcher->register('page.execute', 10, function(Event $event) use($injector) 
 			->setRequestDataPoint('message', $e->getMessage())
 			->fireCallback();
 	}
-	$page->executePage();
-
 	Core::setObject('page', $page);
-	//$dispatcher->triggerUntilBreak(Event::newEvent('page.display'));
+	$page->executePage();
 });
 
 // Display the page
