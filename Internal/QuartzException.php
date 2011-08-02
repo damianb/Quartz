@@ -16,11 +16,11 @@
  *
  */
 
-namespace Codebite\Quartz\Exception;
+namespace Codebite\Quartz\Internal;
 
 /**
- * Quartz - Redirect Exception class,
- * 		Used to trigger an HTTP redirect of a user to another page.
+ * Quartz - Internal Exception class,
+ * 		Used when a method in Quartz is used wrong, or a setting is malformed, etc.
  *
  *
  * @category    Quartz
@@ -29,4 +29,4 @@ namespace Codebite\Quartz\Exception;
  * @license     http://opensource.org/licenses/mit-license.php The MIT License
  * @link        https://github.com/damianb/Quartz
  */
-class RedirectException extends \Exception { }
+class QuartzException extends \Exception { }

@@ -17,8 +17,8 @@
  */
 
 namespace Codebite\Quartz;
-use Codebite\Quartz\Exception\QuartzException;
-use Codebite\Quartz\Exception\RequirementException;
+use Codebite\Quartz\Internal\QuartzException;
+use Codebite\Quartz\Internal\RequirementException;
 use OpenFlame\Framework\Autoloader;
 use OpenFlame\Framework\Core;
 use OpenFlame\Framework\Dependency\Injector;

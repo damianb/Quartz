@@ -16,11 +16,11 @@
  *
  */
 
-namespace Codebite\Quartz\Exception;
+namespace Codebite\Quartz\Internal;
 
 /**
- * Quartz - Redirect Exception class,
- * 		Used to trigger an HTTP redirect of a user to another page.
+ * Quartz - Internal Exception class,
+ * 		Used when a server fails to meet Quartz's requirements (e.g. register_globals setting).
  *
  *
  * @category    Quartz
