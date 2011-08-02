@@ -371,7 +371,7 @@ class Site
 				if(!isset($options['db.host']) || !isset($options['db.name']) || !isset($options['db.username']))
 				{
 					throw new QuartzException('Missing or invalid database connection parameters, cannot connect to database', 2007);
-            	}
+				}
                 $dsn = sprintf('pgsql:host=%s;dbname=%s', ($options['db.host'] ?: 'localhost'), $options['db.name']);
 				$username = $options['db.username'];
 				$password = $options['db.password'] ?: '';
