@@ -29,6 +29,9 @@ use OpenFlame\Dbal\Connection as DbalConnection;
 
 class Site
 {
+    /**
+     * @var \Codebite\Quartz\Site - The singleton instance of this object.
+     */
 	private static $instance;
 
 	/**
@@ -69,7 +72,7 @@ class Site
 		}*/
 	}
 
-	public function __construct()
+	protected function __construct()
 	{
 		// The original error_reporting() setting.
 		$this->startup_reporting = @error_reporting();
@@ -101,15 +104,15 @@ class Site
 	{
 		if(@ini_get('register_globals'))
 		{
-			throw new RequirementException('Application will not run with register_globals enabled; please disable register_globals to run this application.');
+			throw new RequirementException('Application will not run with register_globals enabled; please disable register_globals to run this application.', 1001);
 		}
 		if(@get_magic_quotes_gpc())
 		{
-			throw new RequirementException('Application will not run with magic_quotes_gpc enabled; please disable magic_quotes_gpc to run this application.');
+			throw new RequirementException('Application will not run with magic_quotes_gpc enabled; please disable magic_quotes_gpc to run this application.', 1002);
 		}
 		if(@get_magic_quotes_runtime())
 		{
-			throw new RequirementException('Application will not run with magic_quotes_runtime enabled; please disable magic_quotes_runtime to run this application.');
+			throw new RequirementException('Application will not run with magic_quotes_runtime enabled; please disable magic_quotes_runtime to run this application.', 1003);
 		}
 	}
 
@@ -136,7 +139,7 @@ class Site
 		}
 		else
 		{
-			throw new QuartzException(); // @todo exception
+			throw new QuartzException('Invalid data provided for $configs parameter', 2001);
 		}
 
 		return $this;
@@ -231,7 +234,7 @@ class Site
 		elseif(!is_array($assets))
 		{
 			// Only NULL, a string, or an array are allowed.  If none of the above is provided, we kerboom.
-			throw new QuartzException(); // @todo exception
+			throw new QuartzException('Invalid data provided for $assets parameter', 2002);
 		}
 
 		foreach($assets as $type => $_assets)
@@ -263,7 +266,7 @@ class Site
 		elseif(!is_array($routes))
 		{
 			// Only NULL, a string, or an array are allowed.  If none of the above is provided, we kerboom.
-			throw new QuartzException(); // @todo exception
+			throw new QuartzException('Invalid data provided for $routes parameter', 2003);
 		}
 
 		if($cache->dataCached('page_routes'))
@@ -287,6 +290,13 @@ class Site
 			$cache->storeData('page_routes', $router->getFullRouteCache());
 		}
 	}
+    
+    public function setInjector($name, \Closure $injector)
+    {
+        $this->injector->setInjector($name, $injector);
+        
+        return $this;
+    }
 
 	public function setListener($event_name, $priority, \Closure $listener)
 	{
@@ -313,7 +323,7 @@ class Site
 		}
 		else
 		{
-			throw new QuartzException(); // @todo exception
+			throw new QuartzException('Invalid trigger type specified', 2004);
 		}
 	}
 
@@ -325,7 +335,7 @@ class Site
 		{
 			if(!isset($options['db.type']))
 			{
-				throw new QuartzException(); // @todo exception
+				throw new QuartzException('No database type specified for connection', 2005);
 			}
 			$type = $options['db.type'];
 		}
@@ -334,12 +344,20 @@ class Site
 		switch($type)
 		{
 			case 'sqlite':
+                if(!isset($options['db.file']))
+                {
+                    throw new QuartzException('No database file specified for sqlite database connection', 2006);
+                }
 				$dsn = sprintf('sqlite:%s', $options['db.file']);
 			break;
 
 			case 'mysql':
 			case 'mysqli': // in case someone doesn't know that pdo doesn't do mysqli
-				$dsn = sprintf('mysql:host=%s;dbname=%s', ($options['db.host'] ?: 'localhost'), $options['db.name']);
+				if(!isset($options['db.host']) || !isset($options['db.name']) || !isset($options['db.username']))
+                {
+                    throw new QuartzException('Missing or invalid database connection parameters, cannot connect to database', 2007);
+                }
+                $dsn = sprintf('mysql:host=%s;dbname=%s', ($options['db.host'] ?: 'localhost'), $options['db.name']);
 				$username = $options['db.username'];
 				$password = $options['db.password'] ?: '';
 				$db_options = array(
@@ -350,13 +368,17 @@ class Site
 			case 'pgsql':
 			case 'postgres':
 			case 'postgresql':
-				$dsn = sprintf('pgsql:host=%s;dbname=%s', ($options['db.host'] ?: 'localhost'), $options['db.name']);
+				if(!isset($options['db.host']) || !isset($options['db.name']) || !isset($options['db.username']))
+                {
+                    throw new QuartzException('Missing or invalid database connection parameters, cannot connect to database', 2007);
+                }
+                $dsn = sprintf('pgsql:host=%s;dbname=%s', ($options['db.host'] ?: 'localhost'), $options['db.name']);
 				$username = $options['db.username'];
 				$password = $options['db.password'] ?: '';
 			break;
 
 			default:
-				throw new QuartzException();
+				throw new QuartzException('Invalid or unsupported database type specified for connection', 2008);
 			break;
 		}
 
