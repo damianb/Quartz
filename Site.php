@@ -357,7 +357,7 @@ class Site
 				{
 					throw new QuartzException('Missing or invalid database connection parameters, cannot connect to database', 2007);
 				}
-                $dsn = sprintf('mysql:host=%s;dbname=%s', ($options['db.host'] ?: 'localhost'), $options['db.name']);
+				$dsn = sprintf('mysql:host=%s;dbname=%s', ($options['db.host'] ?: 'localhost'), $options['db.name']);
 				$username = $options['db.username'];
 				$password = $options['db.password'] ?: '';
 				$db_options = array(
@@ -372,7 +372,7 @@ class Site
 				{
 					throw new QuartzException('Missing or invalid database connection parameters, cannot connect to database', 2007);
 				}
-                $dsn = sprintf('pgsql:host=%s;dbname=%s', ($options['db.host'] ?: 'localhost'), $options['db.name']);
+				$dsn = sprintf('pgsql:host=%s;dbname=%s', ($options['db.host'] ?: 'localhost'), $options['db.name']);
 				$username = $options['db.username'];
 				$password = $options['db.password'] ?: '';
 			break;
