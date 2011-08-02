@@ -16,7 +16,7 @@
  *
  */
 
-namespace Codebite\Quartz\Exception;
+namespace Codebite\Quartz\Internal;
 
 /**
  * Quartz - Redirect Exception class,
@@ -29,4 +29,4 @@ namespace Codebite\Quartz\Exception;
  * @license     http://opensource.org/licenses/mit-license.php The MIT License
  * @link        https://github.com/damianb/Quartz
  */
-class QuartzException extends \Exception { }
+class RedirectException extends \Exception { }

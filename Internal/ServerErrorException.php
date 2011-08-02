@@ -16,7 +16,7 @@
  *
  */
 
-namespace Codebite\Quartz\Exception;
+namespace Codebite\Quartz\Internal;
 
 /**
  * Quartz - Server Error Exception class,
