@@ -224,7 +224,7 @@ class Site
 		{
 			$assets = Core::getConfig('site.assets');
 		}
-		elseif(!is_string($assets))
+		elseif(is_string($assets))
 		{
 			$assets = Core::getConfig($assets);
 		}
@@ -246,11 +246,25 @@ class Site
 		return $this;
 	}
 
-	public function setRoutes($routes)
+	public function setRoutes($routes = NULL)
 	{
 		// @todo use $routes as an override for config name
 		$cache = $this->injector->get('cache');
 		$router = $this->injector->get('router');
+
+		if($routes === NULL)
+		{
+			$routes = Core::getConfig('site.routes');
+		}
+		elseif(is_string($routes))
+		{
+			$routes = Core::getConfig($routes);
+		}
+		elseif(!is_array($routes))
+		{
+			// Only NULL, a string, or an array are allowed.  If none of the above is provided, we kerboom.
+			throw new QuartzException(); // @todo exception
+		}
 
 		if($cache->dataCached('page_routes'))
 		{
@@ -260,7 +274,6 @@ class Site
 		else
 		{
 			// Grab the page routes from the config
-			$routes = Core::getConfig('site.routes');
 			$router->newRoutes($routes);
 
 			$home = $router->newRoute($routes['home']['path'], $routes['home']['callback']);
