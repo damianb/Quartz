@@ -79,17 +79,12 @@ example global config file (`data/config/config.json`)
 }
 ```
 
-## constants
+## setup
 
-The constant `\Codebite\Quartz\SITE_ROOT` must be defined in the application, and it must be the root directory of the application itself.
-
-This is the suggested method of defining the constant:
-
-```
-    define('Codebite\Quartz\SITE_ROOT', __DIR__);
-```
+asdf
 
 ## config settings
+* *path.config* **default \Codebite\Quartz\SITE_ROOT . "/data/config/"** - The directory that configuration files are stored.
 * *page.base_url* **default "/"** - The base URL to use for the router, asset manager, and url builder.
 * *db.file* - The SQLite file to connect to (only needed if using the sqlite dbms)
 * *twig.lib_path* **default \Codebite\Quartz\SITE_ROOT . "/includes/vendor/Twig/lib/Twig/"** - The directory to use for the Twig cache.
@@ -120,24 +115,5 @@ This is the suggested method of defining the constant:
 * *seeder* - The OpenFlame Framework random seed string generator.
 * *template* - The OpenFlame Framework template variable manager.
 * *twig* - The wrapper object for Twig that handles autoloader preparation, template path and cache path settings, among other things.
-* *url_builder* - The OpenFlame Framework URL builder, used to generate URL links out of provided patterns.
+* *url* - The OpenFlame Framework URL builder, used to generate URL links out of provided patterns.
 * *url_proxy* - The OpenFlame Framework URL builder proxy, intended for use in Twig templates.
-
-## provided events
-
-* *exception.setup* **priority 5**: Setup the exception handler
-* *debug.enable* **priority 5**: Enable debug mode for your site (displays all notices, errors, etc.)
-* *debug.disable* **priority 5**: Disable debug mode for your site.
-* *page.hidephp* **priority 0**: Remove the X-Powered-By header from headers to be sent (event `page.headers.snag` MUST be run first)
-* *db.sqlite.connect* **priority 0**: Connect to an SQLite database file.
-* *db.mysql.connect* **priority 0**: Connect to a MySQL database.
-* *db.postgresql.connect* **priority 0**: Connect to a PostGreSQL database.
-* *page.routes.load* **priority 5**: Loads routes from the json route file, or load them from the cache if already cached.
-* *page.assets.define* **priority 18**: Loads several proxy objects and helpers into the Twig environment for use in templates.
-* *page.assets.define* **priority 19**: Enables invalid asset exceptions.
-* *page.language.load* **priority 15**: Loads a set of language keys and string.
-* *page.headers.snag* **priority 0**: Grabs the headers currently set to be sent.
-* *page.headers.send* **priority 10**: Send the headers stored in the header manager.
-* *page.execute* **priority -20**: Touches the `$_SERVER` superglobal so the input handler can make use of it.
-* *page.execute* **priority 10**: Obtains the current `REQUEST_URI`, runs it against the router, then triggers the callback associated with the matching route.  Also handles redirects and server errors natively.
-* *page.display* **priority 10**: Sends page headers, loads the twig template specified by the controller, passes template variables to Twig, then renders and outputs the page.
