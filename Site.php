@@ -66,11 +66,11 @@ class Site
 		// define the root paths
 		if(!defined('Codebite\\Quartz\\SITE_ROOT'))
 		{
-			define('Codebite\\Quartz\\SITE_ROOT', rtrim($site_root, '\\/'));
+			define('Codebite\\Quartz\\SITE_ROOT', rtrim($site_root, '\\/') . '/');
 		}
 		if(!defined('Codebite\\Quartz\\INCLUDE_ROOT'))
 		{
-			define('Codebite\\Quartz\\INCLUDE_ROOT', rtrim($site_root . $include_root, '\\/'));
+			define('Codebite\\Quartz\\INCLUDE_ROOT', rtrim($site_root . $include_root, '\\/') . '/');
 		}
 	}
 
