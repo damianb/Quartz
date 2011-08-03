@@ -126,7 +126,7 @@ class Site
 	{
 		if(is_file(Core::getConfig('path.config') . $configs . '.json'))
 		{
-			$config_data = JSON::decode($configs);
+			$config_data = JSON::decode(Core::getConfig('path.config') . $configs . '.json');
 			foreach($config_data as $config_name => $config_value)
 			{
 				Core::setConfig($config_name, $config_value);
