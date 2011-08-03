@@ -290,7 +290,7 @@ class Site
 			$cache->storeData('page_routes', $router->getFullRouteCache());
 		}
 	}
-    
+
 	public function setInjector($name, \Closure $injector)
 	{
 		$this->injector->setInjector($name, $injector);
@@ -409,63 +409,65 @@ class Site
 
 	public function init()
 	{
+		$injector = $this->injector;
+
 		// Define a bunch of injectors
-		$injector->setInjector('router', function() {
+		$this->setInjector('router', function() {
 			return new \OpenFlame\Framework\Router\Router();
 		});
 
-		$injector->setInjector('input', function() {
+		$this->setInjector('input', function() {
 			return new \OpenFlame\Framework\Input\Handler();
 		});
 
-		$injector->setInjector('template', function() {
+		$this->setInjector('template', function() {
 			return new \OpenFlame\Framework\Twig\Variables();
 		});
 
-		$injector->setInjector('asset', function() {
+		$this->setInjector('asset', function() {
 			return new \OpenFlame\Framework\Asset\Manager();
 		});
 
-		$injector->setInjector('asset_proxy', function() use($injector) {
+		$this->setInjector('asset_proxy', function() use($injector) {
 			return new \OpenFlame\Framework\Asset\Proxy($injector->get('asset'));
 		});
 
-		$injector->setInjector('dispatcher', function() {
+		$this->setInjector('dispatcher', function() {
 			return new \OpenFlame\Framework\Event\Dispatcher();
 		});
 
-		$injector->setInjector('processor', function() {
+		$this->setInjector('processor', function() {
 			return new \Codebite\Quartz\Page\Processor();
 		});
 
-		$injector->setInjector('language', function() {
+		$this->setInjector('language', function() {
 			return new \OpenFlame\Framework\Language\Handler();
 		});
 
-		$injector->setInjector('language_proxy', function() use($injector) {
+		$this->setInjector('language_proxy', function() use($injector) {
 			return new \OpenFlame\Framework\Language\Proxy($injector->get('language'));
 		});
 
-		$injector->setInjector('header', function() {
+		$this->setInjector('header', function() {
 			return new \OpenFlame\Framework\Header\Manager();
 		});
 
-		$injector->setInjector('url', function() {
+		$this->setInjector('url', function() {
 			return new \OpenFlame\Framework\URL\Builder();
 		});
 
-		$injector->setInjector('url_proxy', function() use($injector) {
+		$this->setInjector('url_proxy', function() use($injector) {
 			return new \OpenFlame\Framework\URL\BuilderProxy($injector->get('url_builder'));
 		});
 
-		$injector->setInjector('hasher', function() {
+		$this->setInjector('hasher', function() {
 			return new \OpenFlame\Framework\Security\Hasher();
 		});
 		$injector->setInjector('seeder', function() {
 			return new \OpenFlame\Framework\Security\Seeder();
 		});
 
-		$injector->setInjector('twig', function() {
+		$this->setInjector('twig', function() {
 			$twig = new \OpenFlame\Framework\Twig\Wrapper();
 			$twig->setTwigRootPath(Core::getConfig('twig.lib_path') ?: \Codebite\Quartz\INCLUDE_ROOT . '/includes/vendor/Twig/lib/Twig/')
 				->setTwigCachePath((Core::getConfig('twig.cache_path') ?: \Codebite\Quartz\SITE_ROOT . '/cache/twig/'))
@@ -476,16 +478,129 @@ class Site
 			return $twig;
 		});
 
-		$injector->setInjector('cache_engine', function() {
+		$this->setInjector('cache_engine', function() {
 			$cache_engine = new \OpenFlame\Framework\Cache\Engine\File\FileEngineJSON();
 			$cache_engine->setCachePath(\Codebite\Quartz\SITE_ROOT . '/cache/');
 			return $cache_engine;
 		});
 
-		$injector->setInjector('cache', function() use($injector) {
+		$this->setInjector('cache', function() use($injector) {
 			$cache = new \OpenFlame\Framework\Cache\Driver();
 			$cache->setEngine($injector->get('cache_engine'));
 			return $cache;
+		});
+
+		/**
+		 * Define some events
+		 */
+
+		// Snag control of the headers
+		$this->setListener('page.prepare', -15, function(Event $event) use($injector) {
+			$header_manager = $injector->get('header');
+			$header_manager->snagHeaders();
+		});
+
+		// Load the language file
+		$this->setListener('page.prepare', 15, function(Event $event) use($injector) {
+			$language = $injector->get('language');
+			$language_entries = JSON::decode((Core::getConfig('language.file') ?: \Codebite\Quartz\SITE_ROOT . '/data/language/en-us.json'));
+			$language->loadEntries($language_entries);
+		});
+
+		// Create the template proxies and load them into twig
+		$this->setListener('page.prepare', 18, function(Event $event) use($injector) {
+			$twig = $injector->get('twig');
+
+			$twig_env = $twig->getTwigEnvironment();
+			$twig_env->addGlobal('timer', $injector->get('timer'));
+			$twig_env->addGlobal('asset', $injector->get('asset_proxy'));
+			$twig_env->addGlobal('language', $injector->get('language_proxy'));
+			$twig_env->addGlobal('url', $injector->get('url_proxy'));
+		});
+
+		// touch the $_SERVER superglobal so that the input handler can make use of it
+		$this->setListener('page.execute', -20, function(Event $event) use($injector) {
+			$_SERVER;
+		});
+
+		$this->setListener('page.execute', 0, function(Event $event) use($injector) {
+			$dispatcher = $injector->get('dispatcher');
+			$dispatcher->triggerUntilBreak(Event::newEvent('page.route'));
+		});
+
+		// Execute the page logic
+		$this->setListener('page.route', 0, function(Event $event) use($injector) {
+			$dispatcher = $injector->get('dispatcher');
+			$input = $injector->get('input');
+			$router = $injector->get('router');
+			$header_manager = $injector->get('header');
+
+			$request_uri = $input->getInput('SERVER::REQUEST_URI', '/')
+				->getClean();
+
+			$page = $router->processRequest($request_uri)
+				->fireCallback();
+			Core::setObject('page', $page);
+
+			try
+			{
+				$page->executePage();
+			}
+			catch(\Codebite\Quartz\Exception\RedirectException $e)
+			{
+				// *punt* WHEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE~
+				header("HTTP/1.1 301 Moved Permanently");
+				header("Location: " . $e->getMessage());
+				exit;
+			}
+			catch(\Codebite\Quartz\Exception\ServerErrorException $e)
+			{
+				$page = $router->getErrorRoute()
+					->setRequestDataPoint('code', ($e->getCode() ?: 500))
+					->setRequestDataPoint('message', $e->getMessage())
+					->fireCallback();
+				$page->executePage();
+				Core::setObject('page', $page);
+			}
+		});
+
+		// Enable invalid asset exceptions (low priority listener!)
+		$this->setListener('page.execute', 19, function(Event $event) use($injector) {
+			$assets = $injector->get('asset');
+			$assets->enableInvalidAssetExceptions();
+		});
+
+		// Send headers
+		$this->setListener('page.display', -5, function(Event $event) use($injector) {
+			$header = $injector->get('header');
+
+			// Don't send headers if they've already been sent
+			if(!$header->headersSent(false))
+			{
+				$header->sendHeaders();
+			}
+		});
+
+		// Display the page
+		$this->setListener('page.display', 0, function(Event $event) use($injector) {
+			$page = Core::getObject('page');
+			$twig = $injector->get('twig');
+			$template = $injector->get('template');
+
+			$twig_env = $twig->getTwigEnvironment();
+			$twig_page = $twig_env->loadTemplate($page->getTemplateName());
+			try
+			{
+				ob_start();
+				$html = $twig_page->render($template->fetchAllVars());
+				echo $html;
+				ob_end_flush();
+			}
+			catch(\Exception $e)
+			{
+				ob_clean();
+				throw $e;
+			}
 		});
 
 		// Do some basic setup.
@@ -500,16 +615,16 @@ class Site
 	 */
 	public function pagePrepare()
 	{
-		// asdf
+		$this->triggerEvent('page.prepare');
 	}
 
 	public function pageExecute()
 	{
-		// asdf
+		$this->triggerEvent('page.execute');
 	}
 
 	public function pageDisplay()
 	{
-		// asdf
+		$this->triggerEvent('page.display');
 	}
 }
