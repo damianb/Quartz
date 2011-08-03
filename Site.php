@@ -211,7 +211,7 @@ class Site
 			@ini_set("display_errors", "Off");
 			ExceptionHandler::disableDebug();
 		}
-		ExceptionHandler::setUnwrapCount($debug_unwrap_count);
+		ExceptionHandler::setUnwrapCount((int) $debug_unwrap_count);
 
 		return $this;
 	}
