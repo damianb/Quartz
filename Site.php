@@ -461,7 +461,7 @@ class Site
 		});
 
 		$this->setInjector('url_proxy', function() use($injector) {
-			return new \OpenFlame\Framework\URL\BuilderProxy($injector->get('url_builder'));
+			return new \OpenFlame\Framework\URL\BuilderProxy($injector->get('url'));
 		});
 
 		$this->setInjector('hasher', function() {
