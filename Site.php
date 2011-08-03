@@ -474,9 +474,9 @@ class Site
 
 		$this->setInjector('twig', function() {
 			$twig = new \OpenFlame\Framework\Twig\Wrapper();
-			$twig->setTwigRootPath(Core::getConfig('twig.lib_path') ?: \Codebite\Quartz\INCLUDE_ROOT . '/includes/vendor/Twig/lib/Twig/')
-				->setTwigCachePath((Core::getConfig('twig.cache_path') ?: \Codebite\Quartz\SITE_ROOT . '/cache/twig/'))
-				->setTemplatePath((Core::getConfig('twig.template_path') ?: \Codebite\Quartz\SITE_ROOT . '/data/template/'))
+			$twig->setTwigRootPath(Core::getConfig('twig.lib_path') ?: \Codebite\Quartz\INCLUDE_ROOT . 'vendor/Twig/lib/Twig/')
+				->setTwigCachePath((Core::getConfig('twig.cache_path') ?: \Codebite\Quartz\SITE_ROOT . 'cache/twig/'))
+				->setTemplatePath((Core::getConfig('twig.template_path') ?: \Codebite\Quartz\SITE_ROOT . 'data/template/'))
 				->setTwigOption('debug', (Core::getConfig('twig.debug') ?: false));
 			$twig->initTwig();
 
