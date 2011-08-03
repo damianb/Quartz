@@ -64,15 +64,14 @@ class Site
 	public static function definePaths($site_root, $include_root = '/includes/')
 	{
 		// define the root paths
-		// @note commented out for now because it's breaking $this autocomplete in my IDE.  >_<
-		/*if(!defined('Codebite\\Quartz\\SITE_ROOT'))
+		if(!defined('Codebite\\Quartz\\SITE_ROOT'))
 		{
 			define('Codebite\\Quartz\\SITE_ROOT', rtrim($site_root, '\\/'));
 		}
 		if(!defined('Codebite\\Quartz\\INCLUDE_ROOT'))
 		{
 			define('Codebite\\Quartz\\INCLUDE_ROOT', rtrim($site_root . $include_root, '\\/'));
-		}*/
+		}
 	}
 
 	protected function __construct()
