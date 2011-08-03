@@ -124,7 +124,7 @@ class Site
 
 	public function loadConfig($configs)
 	{
-		if(is_file($configs))
+		if(is_file(Core::getConfig('path.config') . $configs . '.json'))
 		{
 			$config_data = JSON::decode($configs);
 			foreach($config_data as $config_name => $config_value)
@@ -609,7 +609,7 @@ class Site
 		});
 
 		// Do some basic setup.
-		$this->loadConfig(Core::getConfig('path.config') . 'config.json');
+		$this->loadConfig('config');
 
 		$this->setDebugOptions((bool) Core::getConfig('site.debug'));
 		$this->setBaseURL(Core::getConfig('page.base_url') ?: '/');
