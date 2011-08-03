@@ -48,6 +48,9 @@ class Site
 	const EVENT_MANUALBREAK = 2;
 	const EVENT_RETURNBREAK = 3;
 
+	/**
+	 * @return \Codebite\Quartz\Site - Returns the singleton instance created.
+	 */
 	public static function getInstance()
 	{
 		if(empty(static::$instance))
