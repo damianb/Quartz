@@ -337,33 +337,33 @@ class Site
 
 		if($type === NULL)
 		{
-			if(!isset($options['db.type']))
+			if(!isset($options['type']))
 			{
 				throw new QuartzException('No database type specified for connection', 2005);
 			}
-			$type = $options['db.type'];
+			$type = $options['type'];
 		}
 
 		$dsn = $username = $password = $db_options = NULL;
 		switch($type)
 		{
 			case 'sqlite':
-				if(!isset($options['db.file']))
+				if(!isset($options['file']))
 				{
 					throw new QuartzException('No database file specified for sqlite database connection', 2006);
 				}
-				$dsn = sprintf('sqlite:%s', $options['db.file']);
+				$dsn = sprintf('sqlite:%s', $options['file']);
 			break;
 
 			case 'mysql':
 			case 'mysqli': // in case someone doesn't know that pdo doesn't do mysqli
-				if(!isset($options['db.host']) || !isset($options['db.name']) || !isset($options['db.username']))
+				if(!isset($options['host']) || !isset($options['name']) || !isset($options['username']))
 				{
 					throw new QuartzException('Missing or invalid database connection parameters, cannot connect to database', 2007);
 				}
-				$dsn = sprintf('mysql:host=%s;dbname=%s', ($options['db.host'] ?: 'localhost'), $options['db.name']);
-				$username = $options['db.username'];
-				$password = $options['db.password'] ?: '';
+				$dsn = sprintf('mysql:host=%s;dbname=%s', ($options['host'] ?: 'localhost'), $options['name']);
+				$username = $options['username'];
+				$password = $options['password'] ?: '';
 				$db_options = array(
 					\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8',
 				);
@@ -372,13 +372,13 @@ class Site
 			case 'pgsql':
 			case 'postgres':
 			case 'postgresql':
-				if(!isset($options['db.host']) || !isset($options['db.name']) || !isset($options['db.username']))
+				if(!isset($options['host']) || !isset($options['name']) || !isset($options['username']))
 				{
 					throw new QuartzException('Missing or invalid database connection parameters, cannot connect to database', 2007);
 				}
-				$dsn = sprintf('pgsql:host=%s;dbname=%s', ($options['db.host'] ?: 'localhost'), $options['db.name']);
-				$username = $options['db.username'];
-				$password = $options['db.password'] ?: '';
+				$dsn = sprintf('pgsql:host=%s;dbname=%s', ($options['host'] ?: 'localhost'), $options['name']);
+				$username = $options['username'];
+				$password = $options['password'] ?: '';
 			break;
 
 			default:
