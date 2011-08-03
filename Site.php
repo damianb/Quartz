@@ -292,6 +292,8 @@ class Site
 
 			$cache->storeData('page_routes', $router->getFullRouteCache());
 		}
+
+		return $this;
 	}
 
 	public function setInjector($name, \Closure $injector)
@@ -466,7 +468,8 @@ class Site
 		$this->setInjector('hasher', function() {
 			return new \OpenFlame\Framework\Security\Hasher();
 		});
-		$injector->setInjector('seeder', function() {
+
+		$this->setInjector('seeder', function() {
 			return new \OpenFlame\Framework\Security\Seeder();
 		});
 
@@ -611,6 +614,8 @@ class Site
 
 		$this->setDebugOptions((bool) Core::getConfig('site.debug'));
 		$this->setBaseURL(Core::getConfig('page.base_url') ?: '/');
+
+		return $this;
 	}
 
 	/**
@@ -619,15 +624,21 @@ class Site
 	public function pagePrepare()
 	{
 		$this->triggerEvent('page.prepare');
+
+		return $this;
 	}
 
 	public function pageExecute()
 	{
 		$this->triggerEvent('page.execute');
+
+		return $this;
 	}
 
 	public function pageDisplay()
 	{
 		$this->triggerEvent('page.display');
+
+		return $this;
 	}
 }
