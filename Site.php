@@ -575,22 +575,12 @@ class Site
 			$assets->enableInvalidAssetExceptions();
 		});
 
-		// Send headers
-		$this->setListener('page.display', -5, function(Event $event) use($injector) {
-			$header = $injector->get('header');
-
-			// Don't send headers if they've already been sent
-			if(!$header->headersSent(false))
-			{
-				$header->sendHeaders();
-			}
-		});
-
 		// Display the page
 		$this->setListener('page.display', 0, function(Event $event) use($injector) {
 			$page = Core::getObject('page');
 			$twig = $injector->get('twig');
 			$template = $injector->get('template');
+			$header = $injector->get('header');
 
 			$twig_env = $twig->getTwigEnvironment();
 			$twig_page = $twig_env->loadTemplate($page->getTemplateName());
@@ -599,13 +589,18 @@ class Site
 				ob_start();
 				$html = $twig_page->render($template->fetchAllVars());
 				echo $html;
-				ob_end_flush();
+
 			}
 			catch(\Exception $e)
 			{
 				ob_clean();
 				throw $e;
 			}
+
+			// Set our content-length header, and send all headers.
+			$header->setHeader('Content-Length', ob_get_length());
+			$header->sendHeaders();
+			ob_end_flush();
 		});
 
 		// Do some basic setup.
