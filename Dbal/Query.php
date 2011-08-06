@@ -26,20 +26,23 @@ class Query extends \OpenFlame\Dbal\Query
 	 */
 	public function _query($hard = false)
 	{
-		$quartz = Quartz::getInstance();
+		if (!$this->queryRan || $hard)
+		{
+			$quartz = Quartz::getInstance();
 
-		$instance = NULL;
-		// Fire the debug timing tick
-		$quartz->debugtime->newEntry('query->query', 'Debug timing tick fired before Query->_query() execution', $instance,
-			array(
-				'sql'			=> $this->sql,
-			)
-		);
+			$instance = NULL;
+			// Fire the debug timing tick
+			$quartz->debugtime->newEntry('query->query', 'Debug timing tick fired before Query->_query() execution', $instance,
+				array(
+					'sql'			=> $this->sql,
+				)
+			);
 
-		parent::_query($hard);
+			parent::_query($hard);
 
-		// Fire the debug timing tick
-		$quartz->debugtime->newEntry('query->query', 'Debug timing tick fired after Query->_query() execution', $instance);
+			// Fire the debug timing tick
+			$quartz->debugtime->newEntry('query->query', 'Debug timing tick fired after Query->_query() execution', $instance);
+		}
 	}
 
 	/**
