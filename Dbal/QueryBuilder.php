@@ -28,6 +28,7 @@ class QueryBuilder extends \OpenFlame\Dbal\QueryBuilder
 	{
 		$quartz = Quartz::getInstance();
 
+		$instance = NULL;
 		// Fire the debug timing tick
 		$quartz->debugtime->newEntry('prebuildsql', 'Debug timing tick fired before Querybuilder->build() execution', $instance,
 			array(
@@ -52,8 +53,13 @@ class QueryBuilder extends \OpenFlame\Dbal\QueryBuilder
 		return $this;
 	}
 
+	/**
+	 * Chains onto the original method, tacks on some timing mechanisms
+	 */
 	public function _query($hard = false)
 	{
+		$quartz = Quartz::getInstance();
+
 		$instance = NULL;
 		// Fire the debug timing tick
 		$quartz->debugtime->newEntry('prequery', 'Debug timing tick fired before Querybuilder->_query() execution', $instance,
