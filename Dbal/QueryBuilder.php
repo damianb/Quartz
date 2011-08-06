@@ -30,7 +30,7 @@ class QueryBuilder extends \OpenFlame\Dbal\QueryBuilder
 
 		$instance = NULL;
 		// Fire the debug timing tick
-		$quartz->debugtime->newEntry('prebuildsql', 'Debug timing tick fired before Querybuilder->build() execution', $instance,
+		$quartz->debugtime->newEntry('querybuilder->build', 'Debug timing tick fired before Querybuilder->build() execution', $instance,
 			array(
 				'querytype'		=> $this->getQueryTypeString(),
 				'selects'		=> count($this->select),
@@ -46,7 +46,7 @@ class QueryBuilder extends \OpenFlame\Dbal\QueryBuilder
 		parent::build();
 
 		// Fire the debug timing tick
-		$quartz->debugtime->newEntry('postbuildsql', 'Debug timing tick fired after Querybuilder->build() execution', $instance);
+		$quartz->debugtime->newEntry('querybuilder->build', 'Debug timing tick fired after Querybuilder->build() execution', $instance);
 
 		// Return $this to behave like the parent object
 
@@ -62,7 +62,7 @@ class QueryBuilder extends \OpenFlame\Dbal\QueryBuilder
 
 		$instance = NULL;
 		// Fire the debug timing tick
-		$quartz->debugtime->newEntry('prequery', 'Debug timing tick fired before Querybuilder->_query() execution', $instance,
+		$quartz->debugtime->newEntry('querybuilder->query', 'Debug timing tick fired before Querybuilder->_query() execution', $instance,
 			array(
 				'querytype'		=> $this->getQueryTypeString(),
 				'sql'			=> $this->sql,
@@ -72,7 +72,7 @@ class QueryBuilder extends \OpenFlame\Dbal\QueryBuilder
 		parent::_query($hard);
 
 		// Fire the debug timing tick
-		$quartz->debugtime->newEntry('postquery', 'Debug timing tick fired after Querybuilder->_query() execution', $instance);
+		$quartz->debugtime->newEntry('querybuilder->query', 'Debug timing tick fired after Querybuilder->_query() execution', $instance);
 	}
 
 	/**
