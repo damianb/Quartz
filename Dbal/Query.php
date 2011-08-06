@@ -21,5 +21,5 @@ use \Codebite\Quartz\Site as Quartz;
 
 class Query extends \OpenFlame\Dbal\Query
 {
-	// asdf
+	// asdfghjkl
 }
