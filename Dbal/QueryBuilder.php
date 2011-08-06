@@ -58,21 +58,24 @@ class QueryBuilder extends \OpenFlame\Dbal\QueryBuilder
 	 */
 	public function _query($hard = false)
 	{
-		$quartz = Quartz::getInstance();
+		if (!$this->queryRan || $hard)
+		{
+			$quartz = Quartz::getInstance();
 
-		$instance = NULL;
-		// Fire the debug timing tick
-		$quartz->debugtime->newEntry('querybuilder->query', 'Debug timing tick fired before Querybuilder->_query() execution', $instance,
-			array(
-				'querytype'		=> $this->getQueryTypeString(),
-				'sql'			=> $this->sql,
-			)
-		);
+			$instance = NULL;
+			// Fire the debug timing tick
+			$quartz->debugtime->newEntry('querybuilder->query', 'Debug timing tick fired before Querybuilder->_query() execution', $instance,
+				array(
+					'querytype'		=> $this->getQueryTypeString(),
+					'sql'			=> $this->sql,
+				)
+			);
 
-		parent::_query($hard);
+			parent::_query($hard);
 
-		// Fire the debug timing tick
-		$quartz->debugtime->newEntry('querybuilder->query', 'Debug timing tick fired after Querybuilder->_query() execution', $instance);
+			// Fire the debug timing tick
+			$quartz->debugtime->newEntry('querybuilder->query', 'Debug timing tick fired after Querybuilder->_query() execution', $instance);
+		}
 	}
 
 	/**
