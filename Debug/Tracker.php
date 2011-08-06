@@ -33,7 +33,7 @@ class Tracker
 			'type'				=> 'App start',
 			'instance'			=> 0,
 			'time'				=> round((float) 0, 7),
-			'timespan'			=> 0,
+			'timespan'			=> (float) 0,
 			'description'		=> 'Application timing start',
 			'data'				=> '',
 
