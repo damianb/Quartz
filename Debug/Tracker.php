@@ -40,7 +40,7 @@ class Tracker
 		);
 	}
 
-	public function newEntry($type, $description, &$instance, $data = '')
+	public function newEntry($type, $description, &$instance, $data = NULL)
 	{
 		$quartz = Quartz::getInstance();
 
