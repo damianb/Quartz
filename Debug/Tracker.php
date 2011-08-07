@@ -49,7 +49,7 @@ class Tracker
 		{
 			if(isset($this->types[(string) $type]))
 			{
-				$instance = $this->types[(string) $type]['count']++;
+				$instance = ++$this->types[(string) $type]['count'];
 			}
 			else
 			{
