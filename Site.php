@@ -556,7 +556,7 @@ class Site
 			Core::setObject('page', $page);
 
 			$debugtime->newEntry('app->route', 'Application route parsing', $dbg_instance, array('request' => $request_uri));
-			$quartz->debugtime->newEntry('app->executepage', '', $dbg_instance2);
+			$debugtime->newEntry('app->executepage', '', $dbg_instance2);
 
 			try
 			{
@@ -579,7 +579,7 @@ class Site
 				Core::setObject('page', $page);
 			}
 
-			$quartz->debugtime->newEntry('app->executepage', 'Application page execution complete', $dbg_instance2);
+			$debugtime->newEntry('app->executepage', 'Application page execution complete', $dbg_instance2);
 		});
 
 		// Enable invalid asset exceptions (low priority listener!)
