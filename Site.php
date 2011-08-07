@@ -548,12 +548,15 @@ class Site
 			$request_uri = $input->getInput('SERVER::REQUEST_URI', '/')
 				->getClean();
 
-			$dbg_instance = NULL;
+			$dbg_instance = $dbg_instance2 = NULL;
 			$debugtime->newEntry('app->route', '', $dbg_instance);
 
 			$page = $router->processRequest($request_uri)
 				->fireCallback();
 			Core::setObject('page', $page);
+
+			$debugtime->newEntry('app->route', 'Application route parsing', $dbg_instance, array('request' => $request_uri));
+			$quartz->debugtime->newEntry('app->executepage', '', $dbg_instance2);
 
 			try
 			{
@@ -576,7 +579,7 @@ class Site
 				Core::setObject('page', $page);
 			}
 
-			$debugtime->newEntry('app->route', 'Application route parsing', $dbg_instance, array('request' => $request_uri));
+			$quartz->debugtime->newEntry('app->executepage', 'Application page executed', $dbg_instance2);
 		});
 
 		// Enable invalid asset exceptions (low priority listener!)
