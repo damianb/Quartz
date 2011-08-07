@@ -542,10 +542,13 @@ class Site
 			$dispatcher = $injector->get('dispatcher');
 			$input = $injector->get('input');
 			$router = $injector->get('router');
-			$header_manager = $injector->get('header');
+			$header = $injector->get('header');
+			$debugtime = $injector->get('debugtime');
 
 			$request_uri = $input->getInput('SERVER::REQUEST_URI', '/')
 				->getClean();
+
+			$debugtime->newEntry('app->route', '', $instance);
 
 			$page = $router->processRequest($request_uri)
 				->fireCallback();
@@ -571,6 +574,8 @@ class Site
 				$page->executePage();
 				Core::setObject('page', $page);
 			}
+
+			$debugtime->newEntry('app->route', 'Application route parsing', $instance, array('request' => $request_uri));
 		});
 
 		// Enable invalid asset exceptions (low priority listener!)
@@ -585,12 +590,14 @@ class Site
 			$twig = $injector->get('twig');
 			$template = $injector->get('template');
 			$header = $injector->get('header');
+			$debugtime = $injector->get('debugtime');
 
 			$twig_env = $twig->getTwigEnvironment();
 			$twig_page = $twig_env->loadTemplate($page->getTemplateName());
 			try
 			{
 				ob_start();
+				$debugtime->newEntry('app->display', 'Rendering page', $instance);
 				$html = $twig_page->render($template->fetchAllVars());
 				echo $html;
 
