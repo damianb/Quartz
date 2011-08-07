@@ -579,7 +579,7 @@ class Site
 				Core::setObject('page', $page);
 			}
 
-			$quartz->debugtime->newEntry('app->executepage', 'Application page executed', $dbg_instance2);
+			$quartz->debugtime->newEntry('app->executepage', 'Application page execution complete', $dbg_instance2);
 		});
 
 		// Enable invalid asset exceptions (low priority listener!)
