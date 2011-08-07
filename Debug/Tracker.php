@@ -36,7 +36,6 @@ class Tracker
 			'timespan'			=> (float) 0,
 			'description'		=> 'Application timing start',
 			'data'				=> '',
-
 		);
 	}
 

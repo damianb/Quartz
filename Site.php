@@ -548,7 +548,8 @@ class Site
 			$request_uri = $input->getInput('SERVER::REQUEST_URI', '/')
 				->getClean();
 
-			$debugtime->newEntry('app->route', '', $instance);
+			$dbg_instance = NULL;
+			$debugtime->newEntry('app->route', '', $dbg_instance);
 
 			$page = $router->processRequest($request_uri)
 				->fireCallback();
@@ -575,7 +576,7 @@ class Site
 				Core::setObject('page', $page);
 			}
 
-			$debugtime->newEntry('app->route', 'Application route parsing', $instance, array('request' => $request_uri));
+			$debugtime->newEntry('app->route', 'Application route parsing', $dbg_instance, array('request' => $request_uri));
 		});
 
 		// Enable invalid asset exceptions (low priority listener!)
@@ -597,7 +598,8 @@ class Site
 			try
 			{
 				ob_start();
-				$debugtime->newEntry('app->display', 'Rendering page', $instance);
+				$dbg_instance = NULL;
+				$debugtime->newEntry('app->display', 'Rendering page', $dbg_instance);
 				$html = $twig_page->render($template->fetchAllVars());
 				echo $html;
 
