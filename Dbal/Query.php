@@ -32,16 +32,16 @@ class Query extends \OpenFlame\Dbal\Query
 
 			$instance = NULL;
 			// Fire the debug timing tick
-			$quartz->debugtime->newEntry('query->query', 'Debug timing tick fired before Query->_query() execution', $instance,
-				array(
-					'sql'			=> $this->sql,
-				)
-			);
+			$quartz->debugtime->newEntry('query->query', '', $instance);
 
 			parent::_query($hard);
 
 			// Fire the debug timing tick
-			$quartz->debugtime->newEntry('query->query', 'Debug timing tick fired after Query->_query() execution', $instance);
+			$quartz->debugtime->newEntry('query->query', '\\OpenFlame\\Dbal\\Query->_query() executed', $instance,
+				array(
+					'sql'			=> $this->sql,
+				)
+			);
 		}
 	}
 
