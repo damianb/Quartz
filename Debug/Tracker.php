@@ -64,7 +64,7 @@ class Tracker
 			'type'				=> (string) $type,
 			'instance'			=> (int) $instance,
 			'time'				=> $time,
-			'timespan'			=> $time - $this->types[(string) $type]['basetime'],
+			'timespan'			=> round($time - $this->types[(string) $type]['basetime'], 7),
 			'description'		=> ($description) ?: 'No description',
 			'data'				=> JSON::encode($data),
 		);
