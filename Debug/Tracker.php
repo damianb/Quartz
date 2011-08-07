@@ -53,8 +53,9 @@ class Tracker
 			}
 			else
 			{
-				$instance = $this->types[(string) $type] = array(
-					'count'		=> 1,
+				$instance = 1;
+				$this->types[(string) $type] = array(
+					'count'		=> $instance,
 					'basetime'	=> $time,
 				);
 			}
