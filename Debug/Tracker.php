@@ -30,7 +30,7 @@ class Tracker
 	{
 		$quartz = Quartz::getInstance();
 		$this->data[] = array(
-			'type'				=> 'App start',
+			'type'				=> 'app',
 			'instance'			=> 0,
 			'time'				=> round((float) 0, 7),
 			'timespan'			=> (float) 0,
