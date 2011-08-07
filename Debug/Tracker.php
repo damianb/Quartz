@@ -50,7 +50,7 @@ class Tracker
 			if(isset($this->types[(string) $type]))
 			{
 				$instance = ++$this->types[(string) $type]['count'];
-				$this->types[(string) $type]['basetime'] = (float) 0.0;
+				$this->types[(string) $type]['basetime'] = $time;
 			}
 			else
 			{
