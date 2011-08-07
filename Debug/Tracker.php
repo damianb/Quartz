@@ -64,7 +64,7 @@ class Tracker
 		$this->data[] = array(
 			'type'				=> (string) $type,
 			'instance'			=> (int) $instance,
-			'time'				=> $time,
+			'time'				=> number_format($time, 7),
 			'timespan'			=> number_format(round($time - $this->types[(string) $type]['basetime'], 7), 7),
 			'description'		=> ($description) ?: 'No description',
 			'data'				=> JSON::encode($data),
