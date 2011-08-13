@@ -387,7 +387,7 @@ class Site
 		}
 
 		DbalConnection::getInstance()
-			->connect($dsn, $username, $password, $options);
+			->connect($dsn, $username, $password, $db_options);
 
 		return $this;
 	}
