@@ -415,67 +415,6 @@ class Site
 	{
 		$injector = $this->injector;
 
-		// Define a bunch of injectors
-		$this->setInjector('router', function() {
-			return new \OpenFlame\Framework\Router\Router();
-		});
-
-		$this->setInjector('input', function() {
-			return new \OpenFlame\Framework\Input\Handler();
-		});
-
-		$this->setInjector('template', function() {
-			return new \OpenFlame\Framework\Twig\Variables();
-		});
-
-		$this->setInjector('asset', function() {
-			return new \OpenFlame\Framework\Asset\Manager();
-		});
-
-		$this->setInjector('asset_proxy', function() use($injector) {
-			return new \OpenFlame\Framework\Asset\Proxy($injector->get('asset'));
-		});
-
-		$this->setInjector('dispatcher', function() {
-			return new \OpenFlame\Framework\Event\Dispatcher();
-		});
-
-		$this->setInjector('processor', function() {
-			return new \Codebite\Quartz\Page\Processor();
-		});
-
-		$this->setInjector('language', function() {
-			return new \OpenFlame\Framework\Language\Handler();
-		});
-
-		$this->setInjector('language_proxy', function() use($injector) {
-			return new \OpenFlame\Framework\Language\Proxy($injector->get('language'));
-		});
-
-		$this->setInjector('header', function() {
-			return new \OpenFlame\Framework\Header\Manager();
-		});
-
-		$this->setInjector('url', function() {
-			return new \OpenFlame\Framework\URL\Builder();
-		});
-
-		$this->setInjector('url_proxy', function() use($injector) {
-			return new \OpenFlame\Framework\URL\BuilderProxy($injector->get('url'));
-		});
-
-		$this->setInjector('hasher', function() {
-			return new \OpenFlame\Framework\Security\Hasher();
-		});
-
-		$this->setInjector('seeder', function() {
-			return new \OpenFlame\Framework\Security\Seeder();
-		});
-
-		$this->setInjector('debugtime', function() {
-			return new \Codebite\Quartz\Debug\Tracker();
-		});
-
 		$this->setInjector('twig', function() {
 			$twig = new \OpenFlame\Framework\Twig\Wrapper();
 			$twig->setTwigRootPath(Core::getConfig('twig.lib_path') ?: \Codebite\Quartz\INCLUDE_ROOT . 'vendor/Twig/lib/Twig/')
