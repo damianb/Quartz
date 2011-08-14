@@ -415,6 +415,10 @@ class Site
 	{
 		$injector = $this->injector;
 
+		$this->setInjector('debugtime', function() {
+			return new \Codebite\Quartz\Debug\Tracker();
+		});
+
 		$this->setInjector('twig', function() {
 			$twig = new \OpenFlame\Framework\Twig\Wrapper();
 			$twig->setTwigRootPath(Core::getConfig('twig.lib_path') ?: \Codebite\Quartz\INCLUDE_ROOT . 'vendor/Twig/lib/Twig/')
