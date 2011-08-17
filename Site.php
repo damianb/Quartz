@@ -464,7 +464,7 @@ class Site
 
 		$this->setListener('page.execute', 0, function(Event $event) use($injector) {
 			$dispatcher = $injector->get('dispatcher');
-			$dispatcher->triggerUntilBreak(Event::newEvent('page.route'));
+			$dispatcher->trigger(Event::newEvent('page.route'), \OpenFlame\Framework\Event\Dispatcher::TRIGGER_MANUALBREAK);
 		});
 
 		// Execute the page logic
