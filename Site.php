@@ -150,6 +150,8 @@ class Site
 	public function setConfigPath($config_path)
 	{
 		Core::setConfig('path.config', $config_path);
+
+		return $this;
 	}
 
 	public function setBaseURL($base_url)
@@ -313,22 +315,7 @@ class Site
 	{
 		$dispatcher = $this->injector->get('dispatcher');
 
-		if($trigger_type === self::EVENT_NOBREAK)
-		{
-			return $dispatcher->trigger(Event::newEvent($event_name));
-		}
-		elseif($trigger_type === self::EVENT_MANUALBREAK)
-		{
-			return $dispatcher->triggerUntilBreak(Event::newEvent($event_name));
-		}
-		elseif($trigger_type === self::EVENT_RETURNBREAK)
-		{
-			return $dispatcher->triggerUntilReturn(Event::newEvent($event_name));
-		}
-		else
-		{
-			throw new QuartzException('Invalid trigger type specified', 2004);
-		}
+		return $dispatcher->trigger(Event::newEvent($event_name), $trigger_type);
 	}
 
 	public function connectToDatabase($type = NULL)
