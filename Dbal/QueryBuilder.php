@@ -38,6 +38,7 @@ class QueryBuilder extends \OpenFlame\Dbal\QueryBuilder
 		// Fire the debug timing tick
 		$quartz->debugtime->newEntry('querybuilder->build', '\\OpenFlame\\Dbal\\QueryBuilder->build() executed', $instance,
 			array(
+/*
 				'querytype'		=> $this->getQueryTypeString(),
 				'selects'		=> count($this->select),
 				'tables'		=> count($this->tables),
@@ -45,6 +46,8 @@ class QueryBuilder extends \OpenFlame\Dbal\QueryBuilder
 				'incrementsets'	=> count($this->rawSets),
 				'insertrows'	=> count($this->rows),
 				'wheres'		=> count($this->wheres),
+*/
+				'sql'			=> $this->sql,
 			)
 		);
 
