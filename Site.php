@@ -297,6 +297,13 @@ class Site
 		return $this;
 	}
 
+	public function setRouteAlias($name, $callback)
+	{
+		$this->injector->get('alias_router')->registerAlias($name, $callback);
+
+		return $this;
+	}
+
 	public function setInjector($name, \Closure $injector)
 	{
 		$this->injector->setInjector($name, $injector);
