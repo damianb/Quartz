@@ -45,8 +45,6 @@ class Error extends \Codebite\Quartz\Page\Instance\Base
 	public function executePage()
 	{
 		$quartz = Quartz::getInstance();
-		$template = $injector->get('template');
-		$header = $injector->get('header');
 
 		if(!empty($this->route))
 		{
