@@ -17,6 +17,7 @@
  */
 
 namespace Codebite\Quartz\Page\Instance;
+use \Codebite\Quartz\Site as Quartz;
 use \OpenFlame\Framework\Core;
 
 /**
@@ -32,51 +33,44 @@ use \OpenFlame\Framework\Core;
  */
 class Error extends \Codebite\Quartz\Page\Instance\Base
 {
+	protected $error_code = 0;
+
 	protected $template_name = 'error.twig.html';
+
+	public function setErrorCode($error_code)
+	{
+		$this->error_code = (int) $error_code;
+	}
 
 	public function executePage()
 	{
-		$template = Core::getObject('template');
-		$input = Core::getObject('input');
+		$quartz = Quartz::getInstance();
+		$template = $injector->get('template');
+		$header = $injector->get('header');
 
-		$error_default = (!empty($this->route) && $this->route->getRequestDataPoint('code')) ? $this->route->getRequestDataPoint('code') : 500;
-		$error = $input->getInput('REQUEST::e')
-			->setDefault($error_default)
-			->disableFieldJuggling()
-			->getClean();
+		if(!empty($this->route))
+		{
+			$this->setErrorCode($this->route->get('code'));
+		}
 
-		// the compendium of all the recognized types of server errors.  Oh the joy!
-		$server_errors = array(
-			200 => 'OK',
-			201 => 'Created',
-			202 => 'Accepted',
-			204 => 'No Content',
-			205 => 'Reset Content',
-			300 => 'Multiple Choices',
-			301 => 'Moved Permanently',
-			302 => 'Found', // Moved Temporarily
-			303 => 'See Other',
-			304 => 'Not Modified',
-			307 => 'Temporary Redirect',
-			400 => 'Bad Request',
-			401 => 'Unauthorized',
-			403 => 'Forbidden',
-			404 => 'Not Found',
-			406 => 'Not Acceptable',
-			409 => 'Conflict',
-			410 => 'Gone',
-			500 => 'Internal Server Error',
-			501 => 'Not Implemented',
-			502 => 'Bad Gateway',
-			503 => 'Service Unavailable',
-		);
+		$quartz->header->setHTTPStatus($this->error_code);
+		try
+		{
+			$error_string = $quartz->header->getHTTPStatusHeader();
+		}
+		catch(\LogicException $e)
+		{
+			$quartz->header->setHTTPStatus(500);
+			$error_string = $quartz->header->getHTTPStatusHeader();
+		}
 
-		// dem errors
-		$error = isset($server_errors[(int) $error]) ? (int) $error : 404;
-		$error_message = $server_errors[(int) $error];
-		header("HTTP/1.0 {$error} {$error_message}");
+		$error_string = str_replace('HTTP/1.0 ', '', $error_string);
 
-		\Codebite\Quartz\Exception\Handler::asplode('Server error', sprintf('An error was encountered while processing your request.<br /><br /><strong>Error:</strong> %1$d %2$s', $error, $error_message));
-		exit;
+		$quartz->template->assignVars(array(
+			'error_code'	=> $this->error_code,
+			'error_string'	=> $error_string,
+		));
+
+		return;
 	}
 }
