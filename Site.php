@@ -499,14 +499,14 @@ class Site
 			{
 				$page->executePage();
 			}
-			catch(\Codebite\Quartz\Exception\RedirectException $e)
+			catch(\Codebite\Quartz\Internal\RedirectException $e)
 			{
 				// *punt* WHEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE~
 				header("HTTP/1.1 301 Moved Permanently");
 				header("Location: " . $e->getMessage());
 				exit;
 			}
-			catch(\Codebite\Quartz\Exception\ServerErrorException $e)
+			catch(\Codebite\Quartz\Internal\ServerErrorException $e)
 			{
 				$page = $router->getErrorRoute()
 					->setRequestDataPoint('code', ($e->getCode() ?: 500))
