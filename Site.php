@@ -485,18 +485,18 @@ class Site
 			$request_uri = $input->getInput('SERVER::REQUEST_URI', '/')
 				->getClean();
 
-			$dbg_instance = $dbg_instance2 = NULL;
-			$debugtime->newEntry('app->route', '', $dbg_instance);
-
-			$page = $router->processRequest($request_uri)
-				->fireCallback();
-			Core::setObject('page', $page);
-
-			$debugtime->newEntry('app->route', 'Application route parsing', $dbg_instance, array('request' => $request_uri));
-			$debugtime->newEntry('app->executepage', '', $dbg_instance2);
-
 			try
 			{
+				$dbg_instance = $dbg_instance2 = NULL;
+				$debugtime->newEntry('app->route', '', $dbg_instance);
+
+				$page = $router->processRequest($request_uri)
+					->fireCallback();
+				Core::setObject('page', $page);
+
+				$debugtime->newEntry('app->route', 'Application route parsing', $dbg_instance, array('request' => $request_uri));
+				$debugtime->newEntry('app->executepage', '', $dbg_instance2);
+
 				$page->executePage();
 			}
 			catch(\Codebite\Quartz\Internal\RedirectException $e)
