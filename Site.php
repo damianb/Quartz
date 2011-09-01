@@ -509,8 +509,8 @@ class Site
 			catch(\Codebite\Quartz\Internal\ServerErrorException $e)
 			{
 				$page = $router->getErrorRoute()
-					->setRequestDataPoint('code', ($e->getCode() ?: 500))
-					->setRequestDataPoint('message', $e->getMessage())
+					->set('code', ($e->getCode() ?: 500))
+					->set('message', $e->getMessage())
 					->fireCallback();
 				$page->executePage();
 				Core::setObject('page', $page);
