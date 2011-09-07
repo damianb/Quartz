@@ -16,13 +16,13 @@
  *
  */
 
-namespace Codebite\Quartz\Page\Instance;
+namespace Codebite\Quartz\Controller;
 use \Codebite\Quartz\Site as Quartz;
 use \OpenFlame\Framework\Core;
 
 /**
- * Quartz - Error page object,
- * 		The error page.
+ * Quartz - Error controller object,
+ * 		The error controller.
  *
  *
  * @category    Quartz
@@ -31,7 +31,7 @@ use \OpenFlame\Framework\Core;
  * @license     http://opensource.org/licenses/mit-license.php The MIT License
  * @link        https://github.com/damianb/Quartz
  */
-class Error extends \Codebite\Quartz\Page\Instance\Base
+class Error extends \Codebite\Quartz\Controller\Base
 {
 	protected $error_code = 0;
 

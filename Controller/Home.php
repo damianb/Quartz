@@ -16,12 +16,12 @@
  *
  */
 
-namespace Codebite\Quartz\Page\Instance;
+namespace Codebite\Quartz\Controller;
 use \OpenFlame\Framework\Core;
 
 /**
- * Quartz - Default page object,
- * 		The home page.
+ * Quartz - Default controller object,
+ * 		The home controller.
  *
  *
  * @category    Quartz
@@ -30,7 +30,7 @@ use \OpenFlame\Framework\Core;
  * @license     http://opensource.org/licenses/mit-license.php The MIT License
  * @link        https://github.com/damianb/Quartz
  */
-class Home extends \Codebite\Quartz\Page\Instance\Base
+class Home extends \Codebite\Quartz\Controller\Base
 {
 	protected $template_name = 'home.twig.html';
 
