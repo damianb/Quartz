@@ -494,10 +494,10 @@ class Site
 
 				$page = $router->processRequest($request_uri)
 					->fireCallback();
-				Core::setObject('page', $page);
+				Core::setObject('controller', $page);
 
 				$debugtime->newEntry('app->route', 'Application route parsing', $dbg_instance, array('request' => $request_uri));
-				$debugtime->newEntry('app->executepage', '', $dbg_instance2);
+				$debugtime->newEntry('app->executecontroller', '', $dbg_instance2);
 
 				$page->executePage();
 			}
@@ -515,10 +515,10 @@ class Site
 					->set('message', $e->getMessage())
 					->fireCallback();
 				$page->executePage();
-				Core::setObject('page', $page);
+				Core::setObject('controller', $page);
 			}
 
-			$debugtime->newEntry('app->executepage', 'Application page execution complete', $dbg_instance2);
+			$debugtime->newEntry('app->executecontroller', 'Application controller execution complete', $dbg_instance2);
 		});
 
 		// Enable invalid asset exceptions (low priority listener!)
@@ -529,7 +529,7 @@ class Site
 
 		// Display the page
 		$this->setListener('page.display', 0, function(Event $event) use($injector) {
-			$page = Core::getObject('page');
+			$page = Core::getObject('controller');
 			$twig = $injector->get('twig');
 			$template = $injector->get('template');
 			$header = $injector->get('header');

@@ -16,12 +16,12 @@
  *
  */
 
-namespace Codebite\Quartz\Page\Instance;
+namespace Codebite\Quartz\Controller;
 use \OpenFlame\Framework\Core;
 
 /**
- * Quartz - Base page class,
- * 		Provides a base for page instances to extend.
+ * Quartz - Base controller class,
+ * 		Provides a base for contollers to extend.
  *
  *
  * @category    Quartz
@@ -44,7 +44,7 @@ abstract class Base
 
 	public static function newInstance()
 	{
-		return Core::setObject('page.instance', new static());
+		return Core::setObject('controller.instance', new static());
 	}
 
 	public static function newRoutedInstance(\OpenFlame\Framework\Router\RouteInstance $route)
