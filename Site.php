@@ -49,7 +49,7 @@ class Site
 	const EVENT_RETURNBREAK = 3;
 
 	/**
-	 * @return \Codebite\Quartz\Site - Returns the singleton instance created.
+	 * @return self - Returns the singleton instance created.
 	 */
 	public static function getInstance()
 	{
@@ -58,7 +58,8 @@ class Site
 			static::$instance = new self();
 		}
 
-		return static::$instance;
+		$self = static::$instance;
+		return $self;
 	}
 
 	public static function definePaths($site_root, $include_root = '/includes/')
