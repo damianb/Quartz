@@ -360,7 +360,8 @@ class Site
 				$username = $options['username'];
 				$password = $options['password'] ?: '';
 				$db_options = array(
-					\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8',
+					\PDO::MYSQL_ATTR_INIT_COMMAND		=> 'SET NAMES utf8',
+					\PDO::MYSQL_ATTR_FOUND_ROWS		=> true,
 				);
 			break;
 
