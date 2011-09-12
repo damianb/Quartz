@@ -518,7 +518,7 @@ class Site
 				Core::setObject('controller', $page);
 			}
 
-			$debugtime->newEntry('app->executecontroller', 'Application controller execution complete', $dbg_instance2);
+			$debugtime->newEntry('app->executecontroller', 'Application controller execution complete', $dbg_instance2, array('controller' => get_class($page)));
 		});
 
 		// Enable invalid asset exceptions (low priority listener!)
@@ -541,7 +541,7 @@ class Site
 			{
 				ob_start();
 				$dbg_instance = NULL;
-				$debugtime->newEntry('app->display', 'Rendering page', $dbg_instance);
+				$debugtime->newEntry('app->display', 'Rendering page', $dbg_instance, array('template' => $page->getTemplateName()));
 				$html = $twig_page->render($template->fetchAllVars());
 				echo $html;
 
