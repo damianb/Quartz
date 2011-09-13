@@ -494,7 +494,7 @@ class Site
 
 				$page = $router->processRequest($request_uri)
 					->fireCallback();
-				Core::setObject('controller', $page);
+				Core::setObject('controller.instance', $page);
 
 				$debugtime->newEntry('app->route', 'Application route parsing', $dbg_instance, array('request' => $request_uri));
 				$debugtime->newEntry('app->executecontroller', '', $dbg_instance2);
@@ -515,7 +515,7 @@ class Site
 					->set('message', $e->getMessage())
 					->fireCallback();
 				$page->executePage();
-				Core::setObject('controller', $page);
+				Core::setObject('controller.instance', $page);
 			}
 
 			$debugtime->newEntry('app->executecontroller', 'Application controller execution complete', $dbg_instance2, array('controller' => get_class($page)));
@@ -529,7 +529,7 @@ class Site
 
 		// Display the page
 		$this->setListener('page.display', 0, function(Event $event) use($injector) {
-			$page = Core::getObject('controller');
+			$page = Core::getObject('controller.instance');
 			$twig = $injector->get('twig');
 			$template = $injector->get('template');
 			$header = $injector->get('header');
