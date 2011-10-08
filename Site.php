@@ -298,6 +298,33 @@ class Site
 		return $this;
 	}
 
+	public function setURLs($urls = NULL)
+	{
+		$url_builder = $this->injector->get('url');
+
+		// If we didn't get an array of assets, try to
+		if($urls === NULL)
+		{
+			$assets = Core::getConfig('site.urls');
+		}
+		elseif(is_string($urls))
+		{
+			$assets = Core::getConfig($urls);
+		}
+		elseif(!is_array($urls))
+		{
+			// Only NULL, a string, or an array are allowed.  If none of the above is provided, we kerboom.
+			throw new QuartzException('Invalid data provided for $urls parameter', 2009);
+		}
+
+		foreach($assets as $name => $pattern)
+		{
+			$url_builder->newPattern($name, $pattern)
+		}
+
+		return $this;
+	}
+
 	public function setRouteAlias($name, $callback)
 	{
 		$this->injector->get('alias_router')->registerAlias($name, $callback);
