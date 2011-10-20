@@ -319,7 +319,7 @@ class Site
 
 		foreach($assets as $name => $pattern)
 		{
-			$url_builder->newPattern($name, $pattern)
+			$url_builder->newPattern($name, $pattern);
 		}
 
 		return $this;
