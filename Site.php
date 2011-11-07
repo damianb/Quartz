@@ -23,7 +23,7 @@ use OpenFlame\Framework\Autoloader;
 use OpenFlame\Framework\Core;
 use OpenFlame\Framework\Dependency\Injector;
 use OpenFlame\Framework\Event\Instance as Event;
-use OpenFlame\Framework\Exception\Handler as ExceptionHandler;
+use OpenFlame\Framework\Exception\EncryptedHandler as ExceptionHandler;
 use OpenFlame\Framework\Utility\JSON;
 use OpenFlame\Dbal\Connection as DbalConnection;
 
