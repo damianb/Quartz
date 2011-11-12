@@ -383,7 +383,7 @@ class Site
 				{
 					throw new QuartzException('Missing or invalid database connection parameters, cannot connect to database', 2007);
 				}
-				$dsn = sprintf('mysql:host=%s;dbname=%s', ($options['host'] ?: 'localhost'), $options['name']);
+				$dsn = sprintf('mysql:charset=UTF-8;host=%s;dbname=%s', ($options['host'] ?: 'localhost'), $options['name']);
 				$username = $options['username'];
 				$password = $options['password'] ?: '';
 				$db_options = array(
