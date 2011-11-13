@@ -39,6 +39,8 @@ class Site
 	 */
 	protected $injector;
 
+	protected $query_count = 0;
+
 	/**
 	 * @var integer - The error_reporting() level on startup
 	 */
@@ -413,6 +415,18 @@ class Site
 			->connect($dsn, $username, $password, $db_options);
 
 		return $this;
+	}
+
+	public function bumpQueryCount()
+	{
+		$this->query_count++;
+
+		return $this;
+	}
+
+	public function getQueryCount()
+	{
+		return (int) $this->query_count;
 	}
 
 	/**

@@ -36,6 +36,8 @@ class Query extends \OpenFlame\Dbal\Query
 
 			parent::_query($hard);
 
+			$quartz->bumpQueryCount();
+
 			// Fire the debug timing tick
 			$quartz->debugtime->newEntry('query->query', '\\OpenFlame\\Dbal\\Query->_query() executed', $instance,
 				array(

@@ -71,6 +71,8 @@ class QueryBuilder extends \OpenFlame\Dbal\QueryBuilder
 
 			parent::_query($hard);
 
+			$quartz->bumpQueryCount();
+
 			// Fire the debug timing tick
 			$quartz->debugtime->newEntry('querybuilder->query', '\\OpenFlame\\Dbal\\QueryBuilder->_query() executed', $instance,
 				array(
