@@ -351,6 +351,11 @@ class Site
 			$scheduler->newTask($name, $time);
 		}
 
+		// Run this so that we can get the most up-to-date task schedule stored.
+		$scheduler->getScheduledTasks();
+
+		$this->injector->get('cache')->storeData('task_schedule', $scheduler->getScheduleCache());
+
 		return $this;
 	}
 
@@ -509,7 +514,7 @@ class Site
 		$this->setInjector('scheduler', function() use($injector) {
 			$scheduler = new \OpenFlame\Framework\Event\Scheduler();
 
-			if(($data = $injector->get('cache')->loadData('cron_schedule')) === NULL)
+			if(($data = $injector->get('cache')->loadData('task_schedule')) !== NULL)
 			{
 				$scheduler->loadScheduleCache($data);
 			}
