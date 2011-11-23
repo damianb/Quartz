@@ -307,11 +307,11 @@ class Site
 		// If we didn't get an array of assets, try to
 		if($urls === NULL)
 		{
-			$assets = Core::getConfig('site.urls');
+			$urls = Core::getConfig('site.urls');
 		}
 		elseif(is_string($urls))
 		{
-			$assets = Core::getConfig($urls);
+			$urls = Core::getConfig($urls);
 		}
 		elseif(!is_array($urls))
 		{
@@ -319,9 +319,36 @@ class Site
 			throw new QuartzException('Invalid data provided for $urls parameter', 2009);
 		}
 
-		foreach($assets as $name => $pattern)
+		foreach($urls as $name => $pattern)
 		{
 			$url_builder->newPattern($name, $pattern);
+		}
+
+		return $this;
+	}
+
+	public function setTasks($tasks = NULL)
+	{
+		$scheduler = $this->injector->get('scheduler');
+
+		// If we didn't get an array of assets, try to
+		if($tasks === NULL)
+		{
+			$tasks = Core::getConfig('site.tasks');
+		}
+		elseif(is_string($tasks))
+		{
+			$tasks = Core::getConfig($tasks);
+		}
+		elseif(!is_array($tasks))
+		{
+			// Only NULL, a string, or an array are allowed.  If none of the above is provided, we kerboom.
+			throw new QuartzException('Invalid data provided for $tasks parameter', 2010);
+		}
+
+		foreach($tasks as $name => $time)
+		{
+			$scheduler->newTask($name, $time);
 		}
 
 		return $this;
@@ -477,6 +504,17 @@ class Site
 			$cache = new \OpenFlame\Framework\Cache\Driver();
 			$cache->setEngine($injector->get('cache_engine'));
 			return $cache;
+		});
+
+		$this->setInjector('scheduler', function() use($injector) {
+			$scheduler = new \OpenFlame\Framework\Event\Scheduler();
+
+			if(($data = $injector->get('cache')->loadData('cron_schedule')) === NULL)
+			{
+				$scheduler->loadScheduleCache($data);
+			}
+
+			return $scheduler;
 		});
 
 		/**
