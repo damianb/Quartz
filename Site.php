@@ -513,8 +513,9 @@ class Site
 
 		$this->setInjector('scheduler', function() use($injector) {
 			$scheduler = new \OpenFlame\Framework\Event\Scheduler();
+			$data = $injector->get('cache')->loadData('task_schedule');
 
-			if(($data = $injector->get('cache')->loadData('task_schedule')) !== NULL)
+			if($data !== NULL)
 			{
 				$scheduler->loadScheduleCache($data);
 			}
